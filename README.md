@@ -1,16 +1,9 @@
-# React + Vite
+## 📋 Project Backlog & Task Delegation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
-
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+| ลำดับ | ผู้รับผิดชอบ | หัวข้อระบบ (Features) | โค้ด MVP อ้างอิง | รายละเอียดงาน (Scope of Work) |
+| :---: | :--- | :--- | :--- | :--- |
+| **1** | **คุณธานอส** | **1. ระบบผู้ใช้งานและโปรไฟล์**<br>*(Auth & User Management)* | `SignInPage.jsx`<br>`SignUpPage.jsx`<br>`Navbar.jsx` | • ทำระบบ Login / Register เชื่อม DB/Auth Provider<br>• จัดการความปลอดภัย (Password Encryption, JWT)<br>• หน้าโปรไฟล์ส่วนตัว (แก้ไขข้อมูล / เปลี่ยนรหัสผ่าน)<br>• ระบบลืมรหัสผ่าน (Forgot Password) |
+| **2** | **คุณฝน** | **2. ระบบสินค้าและการค้นหา**<br>*(Product & Catalog System)* | `ProductGrid.jsx`<br>`ProductsPage.jsx`<br>`ImageMarquee.jsx` | • ดึงข้อมูลสินค้าจาก Database จริง<br>• ระบบค้นหาและ Filter (หมวดหมู่ / ราคา)<br>• หน้ารายละเอียดสินค้า (Product Detail)<br>• ระบบแบ่งหน้า (Pagination) |
+| **3** | **คุณแบงค์** | **3. ระบบตะกร้าและการชำระเงิน**<br>*(Cart, Order & Checkout)* | `CheckoutPage.jsx`<br>`Navbar.jsx`<br>`App.jsx` | • จัดการตะกร้าสินค้า (Local Storage / DB)<br>• ระบบชำระเงิน (แนบสลิป / QR Code / Payment Gateway)<br>• ระบบตัดสต๊อกสินค้า (Inventory)<br>• หน้าประวัติการสั่งซื้อ (Order History) |
+| **4** | **คุณปอ** | **4. ระบบออเดอร์สั่งทำพิเศษ**<br>*(Custom Orders & Services)* | `CustomOrderPage.jsx`<br>`CustomOrderModal.jsx`<br>`CustomOrderCTA.jsx` | • ฟอร์มรับคำขอสั่งทำพิเศษ + อัปโหลดไฟล์/รูป<br>• บันทึกข้อมูลคำขอลง Database<br>• ระบบแจ้งเตือนแอดมินเมื่อมีออเดอร์ใหม่<br>• ระบบเสนอราคา / แชท (Optional) |
+| **5** | **คุณกี** | **5. โครงสร้างหลัก & ระบบหลังบ้าน**<br>*(Core Layout & Admin Dashboard)* | `App.jsx` (Routes)<br>`HomePage.jsx`<br>`Navbar.jsx`<br>`Footer.jsx` | • โครงสร้างโปรเจกต์ภาพรวม & Global State<br>• ประกอบหน้า Home Page ให้สมบูรณ์<br>• **Admin Dashboard:** ระบบจัดการสินค้า (เพิ่ม/ลบ/แก้) และดูรายการออเดอร์ทั้งหมด |
