@@ -2,11 +2,13 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Layout from "./components/Layout";
 import NotFoundPage from "./pages/NotFoundPage";
 import HomePage from "./pages/HomePage";
-import ProductsPage from "./pages/ProductsPage";
 import CustomOrderPage from "./pages/CustomOrderPage";
 import Contact from "./pages/Contact";
 import SignInPage from "./pages/SignInPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import SignUpPage from "./pages/SignUpPage";
+import AllProductsPage from "./pages/AllProductsPage";
+import ProductDetailPage from "./pages/ProductDetailPage";
 
 const router = createBrowserRouter([
   {
@@ -14,15 +16,15 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <NotFoundPage />,
     children: [
-      // navbar
-      { path: "/", element: <HomePage /> },
-      { path: "/products", element: <ProductsPage /> },
-      { path: "/contact", element: <Contact /> },
-      { path: "/custom-order", element: <CustomOrderPage /> },
-
-      // signin & checkout
-      { path: "/signin", element: <SignInPage /> },
-      { path: "/checkout", element: <CheckoutPage /> },
+      { index: true, element: <HomePage /> },
+      { path: "all-products", element: <AllProductsPage /> },
+      { path: "product/:id", element: <ProductDetailPage /> },
+      { path: "contact", element: <Contact /> },
+      { path: "custom-order", element: <CustomOrderPage /> },
+      { path: "signin", element: <SignInPage /> },
+      { path: "signup", element: <SignUpPage /> },
+      { path: "checkout", element: <CheckoutPage /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
   },
 ]);
