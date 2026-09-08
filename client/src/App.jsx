@@ -9,6 +9,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import SignUpPage from "./pages/SignUpPage";
 import AllProductsPage from "./pages/AllProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import { CartProvider } from "./context/CartContext/CartProvider";
 
 const router = createBrowserRouter([
   {
@@ -30,7 +31,11 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router} />;
+  return (
+    <CartProvider>
+      <RouterProvider router={router} />;
+    </CartProvider>
+  );
 }
 
 export default App;
