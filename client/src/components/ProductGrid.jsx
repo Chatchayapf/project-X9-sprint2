@@ -1,38 +1,47 @@
 import { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { products, tagEmoji } from '../data/products';
-import { useCart } from '../context/CartContext/CartContext';
+
 
 const filterTabs = ['All type', 'Ebook', 'Template', 'Souvenir', 'T-shirt Design'];
 
-export default function AllProductsPage() {
-  const { handleAddToCart } = useCart();
-  const location = useLocation();
-  const initialFilter = location.state?.filter ?? 'All type';
-  const [activeFilter, setActiveFilter] = useState(initialFilter);
+const ProductGrid = ({ onAddToCart, activeFilter = 'All type', setActiveFilter }) => {
   const [search, setSearch] = useState('');
 
-  const filtered = products.filter((p) => {
+  const filtered = products.filter(p => {
     const matchFilter = activeFilter === 'All type' || p.tag === activeFilter;
     const matchSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
     return matchFilter && matchSearch;
   });
 
   return (
-    <div className="w-full px-4 md:px-8 lg:px-12 py-10">
-      {/* Page Header */}
-      <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+    <section id="products" className="w-full px-4 md:px-8 lg:px-12 py-10">
+
+      {/* Filter Bar */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+        <div className="flex flex-wrap gap-2 items-center">
+          {filterTabs.map(tab => (
+            <button
+              key={tab}
+              onClick={() => setActiveFilter(tab)}
+              className={`btn btn-sm rounded-full ${
+                activeFilter === tab ? 'btn-neutral' : 'btn-outline'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+          {/* Separator */}
+          <span className="w-px h-5 bg-base-content/20 mx-1 hidden sm:block" />
           <Link
-            to="/"
-            className="inline-flex items-center gap-1.5 text-sm text-base-content/60 hover:text-primary transition-colors mb-3"
+            to="/all-products"
+            className="btn btn-sm btn-primary rounded-full gap-1.5 shadow-sm"
           >
-            ← กลับหน้าหลัก
+            ดูทั้งหมด
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
           </Link>
-          <h1 className="text-3xl font-bold text-base-content">สินค้าทั้งหมด</h1>
-          <p className="text-base-content/50 text-sm mt-1">
-            แสดง {filtered.length} รายการ จากทั้งหมด {products.length} รายการ
-          </p>
         </div>
         {/* Search */}
         <div className="relative">
@@ -43,32 +52,16 @@ export default function AllProductsPage() {
             type="text"
             placeholder="ค้นหาสินค้า..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={e => setSearch(e.target.value)}
             className="input input-bordered input-sm pl-9 rounded-full w-full max-w-xs"
           />
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <div className="flex flex-wrap gap-2 mb-8">
-        {filterTabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveFilter(tab)}
-            className={`btn btn-sm rounded-full ${activeFilter === tab ? 'btn-neutral' : 'btn-outline'}`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
       {/* Product Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {filtered.map((product) => (
-          <div
-            key={product.id}
-            className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200 border border-base-200"
-          >
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
+        {filtered.map(product => (
+          <div key={product.id} className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200 border border-base-200">
             {/* รูปสินค้า — คลิกเพื่อดูรายละเอียด */}
             <Link
               to={`/product/${product.id}`}
@@ -86,26 +79,27 @@ export default function AllProductsPage() {
                 </span>
               </div>
             </Link>
+            {/* ข้อมูลสินค้า */}
             <div className="card-body p-3 gap-1.5">
+              {/* Tag */}
               <div className={`badge badge-sm border-none w-fit ${product.tagColor}`}>
                 {product.tag}
               </div>
-              <h3 className="card-title text-xs font-semibold leading-snug line-clamp-2 mt-1">
-                {product.name}
-              </h3>
-              <p className="text-[10px] text-base-content/60 leading-relaxed line-clamp-2">
-                {product.description}
-              </p>
+              {/* ชื่อและคำอธิบาย */}
+              <h3 className="card-title text-xs font-semibold leading-snug line-clamp-2 mt-1">{product.name}</h3>
+              <p className="text-[10px] text-base-content/60 leading-relaxed line-clamp-2">{product.description}</p>
+              {/* Rating */}
               <div className="flex items-center gap-1 text-[10px] text-base-content/60">
                 <span className="text-warning">★</span>
                 <span>{product.rating}</span>
                 <span className="opacity-70">({product.reviews})</span>
                 <span className="ml-auto opacity-70 truncate max-w-[50px]">โหลด {product.quantity.toLocaleString()}</span>
               </div>
+              {/* ราคา + ปุ่ม Add to Cart */}
               <div className="card-actions justify-between items-center mt-auto pt-2 border-t border-base-200">
                 <span className="text-sm font-bold">฿{product.price}</span>
                 <button
-                  onClick={() => handleAddToCart(product)}
+                  onClick={() => onAddToCart(product)}
                   className="btn btn-primary btn-xs"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -120,11 +114,15 @@ export default function AllProductsPage() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center py-20 text-gray-400">
-          <div className="text-5xl mb-4">🔍</div>
-          <p className="text-lg">ไม่พบสินค้าที่ตรงกับการค้นหา</p>
+        <div className="text-center py-16 text-gray-400">
+          <div className="text-4xl mb-3">🔍</div>
+          <p>ไม่พบสินค้าที่ตรงกับการค้นหา</p>
         </div>
       )}
-    </div>
+
+
+    </section>
   );
-}
+};
+
+export default ProductGrid;
