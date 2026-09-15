@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useCart } from "../context/CartContext/CartContext";
 import HeroBanner from "../components/HeroBanner";
 import ImageMarquee from "../components/ImageMarquee";
+import CustomOrderCTA from "../components/CostomerOrderCTA";
 
 const HomePage = () => {
     const { handleAddToCart } = useCart();
@@ -36,6 +37,7 @@ const HomePage = () => {
         <div className="min-w-screen">
             <HeroBanner onCategoryClick={handleCategoryClick}/>
             <ImageMarquee />
+            <CustomOrderCTA />
         </div>
     );
 };
