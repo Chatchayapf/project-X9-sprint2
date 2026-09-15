@@ -1,8 +1,8 @@
 const images = [
-  { src: '/homepage/imagemarquee/img1.jpg', alt: 'Tote Bag Jinny' },
-  { src: '/homepage/imagemarquee/img2.jpg', alt: 'Fashion E-book' },
-  { src: '/homepage/imagemarquee/img3.jpg', alt: 'Latte T-shirt' },
-  { src: '/homepage/imagemarquee/img4.png', alt: 'My House Coloring' },
+    { src: "/homepage/imagemarquee/img1.jpg", alt: "Tote Bag Jinny" },
+    { src: "/homepage/imagemarquee/img2.jpg", alt: "Fashion E-book" },
+    { src: "/homepage/imagemarquee/img3.jpg", alt: "Latte T-shirt" },
+    { src: "/homepage/imagemarquee/img4.png", alt: "My House Coloring" },
 ];
 
 export default function ImageMarquee() {
