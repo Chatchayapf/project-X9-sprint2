@@ -5,6 +5,7 @@ import HeroBanner from "../components/HeroBanner";
 import ImageMarquee from "../components/ImageMarquee";
 import CustomOrderCTA from "../components/CostomerOrderCTA";
 import ContactSection from "../components/ContactSection";
+import ProductGrid from "../components/ProductGrid";
 
 const HomePage = () => {
     const { handleAddToCart } = useCart();
@@ -38,6 +39,7 @@ const HomePage = () => {
         <div className="min-w-screen">
             <HeroBanner onCategoryClick={handleCategoryClick}/>
             <ImageMarquee />
+            <ProductGrid onAddToCart={handleAddToCart} activeFilter={activeFilter} setActiveFilter={setActiveFilter} />
             <CustomOrderCTA />
             <ContactSection />
         </div>
