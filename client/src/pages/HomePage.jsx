@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext/CartContext";
 import HeroBanner from "../components/HeroBanner";
 import ImageMarquee from "../components/ImageMarquee";
 import CustomOrderCTA from "../components/CostomerOrderCTA";
+import ContactSection from "../components/ContactSection";
 
 const HomePage = () => {
     const { handleAddToCart } = useCart();
@@ -38,6 +39,7 @@ const HomePage = () => {
             <HeroBanner onCategoryClick={handleCategoryClick}/>
             <ImageMarquee />
             <CustomOrderCTA />
+            <ContactSection />
         </div>
     );
 };
