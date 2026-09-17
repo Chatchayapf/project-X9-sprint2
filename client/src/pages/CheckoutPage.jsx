@@ -1,6 +1,15 @@
+import Checkout from "../components/Checkout";
+import { useCart } from "../context/CartContext/CartContext";
+
 const CheckoutPage = () => {
+  const { cartItems, clearCart } = useCart();
+
   return (
-    <div>CheckoutPage</div>
-  )
-}
-export default CheckoutPage
+    <Checkout
+      cartItems={cartItems}
+      clearCart={clearCart}
+    />
+  );
+};
+
+export default CheckoutPage;
