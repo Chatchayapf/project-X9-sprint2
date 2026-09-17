@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { products, tagEmoji } from '../data/products';
+import { products } from '../data/products';
 import { useCart } from '../context/CartContext/CartContext';
 
 const filterTabs = ['All type', 'Ebook', 'Template', 'Souvenir', 'T-shirt Design'];
