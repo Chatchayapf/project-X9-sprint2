@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext/CartContext';
-import Footer from './Footer';
 
 
 const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, removeItem: propRemoveItem }) => {
