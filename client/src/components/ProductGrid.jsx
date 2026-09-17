@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { products } from "../data/products";
+// import { products } from "../data/products";
+import { getProducts } from "../services/productsServices";
 
 const filterTabs = [
   "All type",
@@ -16,6 +17,7 @@ const ProductGrid = ({
   setActiveFilter,
 }) => {
   const [search, setSearch] = useState("");
+  const [products, setProducts] = useState([]);
 
   const filtered = products.filter((p) => {
     const matchFilter = activeFilter === "All type" || p.tag === activeFilter;
@@ -24,6 +26,19 @@ const ProductGrid = ({
       .includes(search.toLowerCase());
     return matchFilter && matchSearch;
   });
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts();
+        setProducts(data)
+        
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchProducts();
+  }, []);
 
   return (
     <section id="products" className="w-full px-4 md:px-8 lg:px-12 py-10">
