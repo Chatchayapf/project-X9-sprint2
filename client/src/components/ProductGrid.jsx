@@ -108,16 +108,16 @@ const ProductGrid = ({
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
         {filtered.map((product) => (
           <div
-            key={product.id}
+            key={product._id}
             className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200 border border-base-200"
           >
             {/* รูปสินค้า — คลิกเพื่อดูรายละเอียด */}
             <Link
-              to={`/product/${product.id}`}
+              to={`/product/${product._id}`}
               className="block relative group/img w-full aspect-square bg-base-200 flex items-center justify-center overflow-hidden cursor-pointer"
             >
               <img
-                src={`/images/products/product-${product.id}.jpg`}
+                src={`/images/products/product-${product._id}.jpg`}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
               />
