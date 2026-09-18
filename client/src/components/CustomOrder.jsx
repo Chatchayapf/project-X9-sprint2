@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Send, CheckCircle2, Calendar, Shirt, Gift, FileCode } from 'lucide-react';
 
 export default function CustomOrder() {
@@ -13,8 +13,8 @@ export default function CustomOrder() {
   return (
     <div className="py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto space-y-8">
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold text-white">สั่งทำงานออกแบบเฉพาะ (Custom Order)</h1>
-        <p className="text-slate-400 text-sm max-w-xl mx-auto">
+        <h1 className="text-3xl font-bold text-base-content">สั่งทำงานออกแบบเฉพาะ (Custom Order)</h1>
+        <p className="text-base-content/60 text-sm max-w-xl mx-auto">
           กรอกรายละเอียดบรีฟงานออกแบบลายเสื้อ ของที่ระลึก หรือเทมเพลตเฉพาะสำหรับองค์กรของคุณ
         </p>
       </div>
