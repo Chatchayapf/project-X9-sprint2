@@ -10,12 +10,10 @@ app.use(express.json());
 
 app.use("/api", apiRoutes);
 app.use((err, req, res, next) => {
-  return res
-    .status(500)
-    .json({
-      error: "Something went wrong on the server...",
-      message: err.message,
-    });
+  return res.status(500).json({
+    error: "Something went wrong on the server...",
+    message: err.message,
+  });
 });
 
 const PORT = process.env.PORT;

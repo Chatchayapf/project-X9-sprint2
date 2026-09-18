@@ -1,22 +1,29 @@
-import React from 'react';
-import { BookOpen } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { BookOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const SignUp = () => {
   return (
-    <div  className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col justify-center py-12 sm:px-6 lg:px-8"
-  style={{ backgroundImage: "url('/images/login-bg.jpg')" }}>
+    <div
+      className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col justify-center py-12 sm:px-6 lg:px-8"
+      style={{ backgroundImage: "url('/images/login-bg.jpg')" }}
+    >
       <div className="sm:mx-auto sm:w-full sm:max-w-md bg-amber-50">
         <div className="card bg-base-100 w-full shadow-xl border border-base-200 p-8 sm:p-10 flex flex-col items-center ">
-          
-          <BookOpen className="w-10 h-10 text-primary mb-4" strokeWidth={2} color='blue' />
-          
+          <BookOpen
+            className="w-10 h-10 text-primary mb-4"
+            strokeWidth={2}
+            color="blue"
+          />
+
           <h2 className="text-center text-2xl md:text-3xl font-extrabold text-base-content tracking-tight mb-2">
             Create an account
           </h2>
           <p className="text-center text-sm text-base-content/60 mb-8">
-            Or{' '}
-            <Link to="/signin" className="link link-primary font-medium text-blue-800">
+            Or{" "}
+            <Link
+              to="/signin"
+              className="link link-primary font-medium text-blue-800"
+            >
               Sign in to your account
             </Link>
           </p>
@@ -84,7 +91,9 @@ const SignUp = () => {
 
             <label className="form-control w-full">
               <div className="label">
-                <span className="label-text font-semibold">Confirm Password</span>
+                <span className="label-text font-semibold">
+                  Confirm Password
+                </span>
               </div>
               <input
                 id="confirmPassword"
