@@ -117,7 +117,7 @@ const ProductGrid = ({
               className="block relative group/img w-full aspect-square bg-base-200 flex items-center justify-center overflow-hidden cursor-pointer"
             >
               <img
-                src={`/images/products/product-${product._id}.jpg`}
+                src={product.img_url}
                 alt={product.name}
                 className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500"
               />
