@@ -1,0 +1,23 @@
+@baseUrl = http://localhost:3002/api/v1/users
+
+
+### Read user profile เทสในกรณี (user)
+GET {{baseUrl}}/me
+Content-Type: application/json
+
+{
+  "userId": "6ab0ea91182ea7f4d8e3ca92"
+}
+
+### Update user profile เทสในกรณี (user)
+PATCH  {{baseUrl}}/me
+Content-Type: application/json
+
+{
+  "userId": "6ab0ea91182ea7f4d8e3ca92",
+  "firstname": "สมเสร็จ",
+  "lastname": "ระบบเยี่ยม"
+}
+
+### Read all users เทสในกรณี (admin)
+GET {{baseUrl}}
