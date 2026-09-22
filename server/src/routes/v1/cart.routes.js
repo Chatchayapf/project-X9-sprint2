@@ -4,7 +4,7 @@ import { User } from "../../models/user.model";
 const router = Router();
 
 // Get cart from database and sent to frontend.
-router.get("/cart", requireAuth, async (req, res, next) => {
+router.get("/", requireAuth, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id)
       .select("cart")
@@ -21,7 +21,7 @@ router.get("/cart", requireAuth, async (req, res, next) => {
 });
 
 // Add item to cart.
-router.post("/cart/items", requireAuth, async (req, res, next) => {
+router.post("/items", requireAuth, async (req, res, next) => {
   try {
     const { product_id, product_quantity } = req.body;
 
@@ -68,7 +68,7 @@ router.post("/cart/items", requireAuth, async (req, res, next) => {
 });
 
 // Update item in cart (increase, decrease).
-router.patch("/cart/items/:id", requireAuth, async (req, res, next) => {
+router.patch("/items/:id", requireAuth, async (req, res, next) => {
   try {
     const { id } = req.params; // this is the cart sub-document's _id... but your schema sets _id: false on cartItemSchema, see note below
     const { action } = req.body; // expects "increase" or "decrease"
@@ -112,7 +112,7 @@ router.patch("/cart/items/:id", requireAuth, async (req, res, next) => {
 });
 
 // Delete item in cart.
-router.delete("/cart/items/:id", requireAuth, async (req, res, next) => {
+router.delete("/items/:id", requireAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
 
