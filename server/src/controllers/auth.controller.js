@@ -16,8 +16,15 @@ const cookieOptions = (maxAge) => ({
 
 export const register = async (req, res, next) => {
   try {
-    const { firstname, lastname, birth_date, gender, username, email, password } =
-      req.body;
+    const {
+      firstname,
+      lastname,
+      birth_date,
+      gender,
+      username,
+      email,
+      password,
+    } = req.body;
 
     const user = await User.create({
       firstname,
@@ -30,7 +37,11 @@ export const register = async (req, res, next) => {
     });
 
     const accessToken = generateAccessToken(user._id);
-    res.cookie("accessToken", accessToken, cookieOptions(7 * 24 * 60 * 60 * 1000));
+    res.cookie(
+      "accessToken",
+      accessToken,
+      cookieOptions(7 * 24 * 60 * 60 * 1000),
+    );
 
     res.status(201).json({
       success: true,
@@ -82,7 +93,11 @@ export const login = async (req, res, next) => {
     }
 
     const accessToken = generateAccessToken(user._id);
-    res.cookie("accessToken", accessToken, cookieOptions(7 * 24 * 60 * 60 * 1000));
+    res.cookie(
+      "accessToken",
+      accessToken,
+      cookieOptions(7 * 24 * 60 * 60 * 1000),
+    );
 
     res.status(200).json({
       success: true,
@@ -110,6 +125,7 @@ export const logout = async (req, res, next) => {
       httpOnly: true,
       sameSite: "lax",
       secure: process.env.NODE_ENV === "production",
+      path: "/",
     });
 
     res.status(200).json({
