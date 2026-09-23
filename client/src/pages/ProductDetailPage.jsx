@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { tagEmoji } from "../data/products";
 import { useCart } from "../context/CartContext/CartContext";
 import { getProductById } from "../services/productsServices";
 
@@ -36,7 +35,7 @@ export default function ProductDetailPage() {
     );
   }
 
-  const images = product.images ?? [tagEmoji(product.tag)];
+  const images = product.images ?? [];
 
   return (
     <div className="w-full px-4 md:px-8 lg:px-12 py-10 max-w-5xl mx-auto">
