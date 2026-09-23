@@ -1,10 +1,12 @@
 import { Router } from "express";
-import { User } from "../../models/user.model";
+import { User } from "../../models/user.model.js";
+import { Product } from "../../models/product.model.js";
+import { authUser } from "../../middlewares/auth.middleware.js";
 
-const router = Router();
+export const router = Router();
 
 // Get cart from database and sent to frontend.
-router.get("/", requireAuth, async (req, res, next) => {
+router.get("/", authUser, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id)
       .select("cart")
@@ -21,12 +23,13 @@ router.get("/", requireAuth, async (req, res, next) => {
 });
 
 // Add item to cart.
-router.post("/items", requireAuth, async (req, res, next) => {
+router.post("/items", authUser, async (req, res, next) => {
   try {
-    const { product_id, product_quantity } = req.body;
+    const { product_id } = req.body;
+    const product_quantity = Number(req.body.product_quantity);
 
-    if (!product_id || !product_quantity || product_quantity < 1) {
-      return res.status(400).json({ message: "product_id and a valid product_quantity are required" });
+    if (!product_id || !Number.isInteger(product_quantity) || product_quantity < 1) {
+      return res.status(400).json({ message: "product_id and a valid numeric product_quantity are required" });
     }
 
     // Look up the product to get its current price (never trust price from the client)
@@ -68,9 +71,9 @@ router.post("/items", requireAuth, async (req, res, next) => {
 });
 
 // Update item in cart (increase, decrease).
-router.patch("/items/:id", requireAuth, async (req, res, next) => {
+router.patch("/items/:id", authUser, async (req, res, next) => {
   try {
-    const { id } = req.params; // this is the cart sub-document's _id... but your schema sets _id: false on cartItemSchema, see note below
+    const { id } = req.params; // cart items have no _id (cartItemSchema sets _id: false); this id is the product_id
     const { action } = req.body; // expects "increase" or "decrease"
 
     if (!["increase", "decrease"].includes(action)) {
@@ -112,7 +115,7 @@ router.patch("/items/:id", requireAuth, async (req, res, next) => {
 });
 
 // Delete item in cart.
-router.delete("/items/:id", requireAuth, async (req, res, next) => {
+router.delete("/items/:id", authUser, async (req, res, next) => {
   try {
     const { id } = req.params;
 
