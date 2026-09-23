@@ -18,26 +18,23 @@ const ProductGrid = ({
   const [search, setSearch] = useState("");
   const [products, setProducts] = useState([]);
 
-  const filtered = products.filter((p) => {
-    const matchFilter = activeFilter === "All type" || p.tag === activeFilter;
-    const matchSearch = (p.name || "")
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    return matchFilter && matchSearch;
-  });
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getProducts();
-        setProducts(data)
-        
+        const data = await getProducts(search, activeFilter);
+        setProducts(data);
       } catch (error) {
         console.log(error);
       }
     };
-    fetchProducts();
-  }, []);
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchProducts();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [search, activeFilter]);
 
   return (
     <section id="products" className="w-full px-4 md:px-8 lg:px-12 py-10">
@@ -103,9 +100,8 @@ const ProductGrid = ({
         </div>
       </div>
 
-      {/* Product Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-4">
-        {filtered.map((product) => (
+        {products.map((product) => (
           <div
             key={product._id}
             className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200 border border-base-200"
@@ -180,7 +176,7 @@ const ProductGrid = ({
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {products.length === 0 && (
         <div className="text-center py-16 text-gray-400">
           <div className="text-4xl mb-3">🔍</div>
           <p>ไม่พบสินค้าที่ตรงกับการค้นหา</p>
