@@ -100,7 +100,9 @@ export default function AllProductsPage() {
                 <span className="text-warning">★</span>
                 <span>{product.rating}</span>
                 <span className="opacity-70">({product.reviews})</span>
-                <span className="ml-auto opacity-70 truncate max-w-[50px]">โหลด {product.quantity.toLocaleString()}</span>
+                <span className="ml-auto opacity-70 truncate max-w-[80px]">
+                  {product.details?.pages || product.details?.slides || product.details?.quantity || ""}
+                </span>
               </div>
               <div className="card-actions justify-between items-center mt-auto pt-2 border-t border-base-200">
                 <span className="text-sm font-bold">฿{product.price}</span>

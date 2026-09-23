@@ -1,13 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { products, tagEmoji } from "../data/products";
+import { tagEmoji } from "../data/products";
 import { useCart } from "../context/CartContext/CartContext";
+import { getProductById } from "../services/productsServices";
 
 export default function ProductDetailPage() {
   const { handleAddToCart } = useCart();
   const { id } = useParams();
-  const product = products.find((p) => p.id === Number(id));
+  const [product, setProduct] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const data = await getProductById(id);
+        setProduct(data);
+      } catch (error) {
+        console.error("Error fetching product:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProduct();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32 text-base-content/50">
+        <span className="loading loading-spinner loading-lg"></span>
+        <p className="mt-4">กำลังโหลดข้อมูลสินค้า...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
@@ -53,7 +78,7 @@ export default function ProductDetailPage() {
           {/* Main image */}
           <div className="bg-base-200 rounded-2xl flex items-center justify-center overflow-hidden aspect-square shadow-inner select-none transition-all duration-200">
             <img
-              src={`/images/products/product-${product.id}.jpg`}
+              src={product.img_url ? product.img_url[0] : `/images/products/product-${product.id}.jpg`}
               alt={product.name}
               className="w-full h-full object-cover"
             />
@@ -107,7 +132,7 @@ export default function ProductDetailPage() {
             </span>
             <span>({product.reviews} รีวิว)</span>
             <span className="ml-2 opacity-60">
-              • ดาวน์โหลด {product.quantity.toLocaleString()} ครั้ง
+              • {product.details?.pages || product.details?.slides || product.details?.quantity || "ไฟล์ดิจิทัล"}
             </span>
           </div>
 
@@ -126,10 +151,7 @@ export default function ProductDetailPage() {
             <span className="text-base-content/40 text-sm mb-1">/ ไฟล์</span>
           </div>
 
-          {/* Stock */}
-          <p className="text-xs text-base-content/40">
-            มีสินค้าในคลัง {product.quantity.toLocaleString()} รายการ
-          </p>
+
 
           {/* File info */}
           <div className="flex flex-wrap gap-2">
