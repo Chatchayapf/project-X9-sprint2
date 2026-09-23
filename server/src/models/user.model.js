@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 
 // Sub-schema สำหรับสินค้าในตะกร้า
 const cartItemSchema = new mongoose.Schema({
@@ -56,6 +57,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
+      minlength: [6, "Password must be at least 6 characters"],
     },
     role: {
       type: String,
@@ -68,5 +70,18 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+  try {
+    this.password = await bcrypt.hash(this.password, 10);
+  } catch (error) {
+    next(error);
+  }
+});
+
+userSchema.methods.comparePassword = function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.password);
+};
 
 export const User = mongoose.model("User", userSchema);
