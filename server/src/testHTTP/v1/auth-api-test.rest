@@ -24,6 +24,17 @@ Content-Type: application/json
 }
 
 
+### login user with username
+
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+    "email":"Dragonflyx",
+    "password":"123456"
+}
+
+
 ### logout user
 POST {{baseUrl}}/logout
 
