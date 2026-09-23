@@ -16,20 +16,20 @@ export default function AllProductsPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data = await getProducts();
+        const data = await getProducts(search, activeFilter);
         setProducts(data);
       } catch (error) {
         console.error("Error fetching products:", error);
       }
     };
-    fetchProducts();
-  }, []);
 
-  const filtered = products.filter((p) => {
-    const matchFilter = activeFilter === 'All type' || p.tag === activeFilter;
-    const matchSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
-  });
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchProducts();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [search, activeFilter]);
 
   return (
     <div className="w-full px-4 md:px-8 lg:px-12 py-10">
@@ -44,7 +44,7 @@ export default function AllProductsPage() {
           </Link>
           <h1 className="text-3xl font-bold text-base-content">สินค้าทั้งหมด</h1>
           <p className="text-base-content/50 text-sm mt-1">
-            แสดง {filtered.length} รายการ จากทั้งหมด {products.length} รายการ
+            แสดง {products.length} รายการ
           </p>
         </div>
         {/* Search */}
@@ -77,7 +77,7 @@ export default function AllProductsPage() {
 
       {/* Product Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {filtered.map((product) => (
+        {products.map((product) => (
           <div
             key={product._id}
             className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200 border border-base-200"
@@ -134,7 +134,7 @@ export default function AllProductsPage() {
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {products.length === 0 && (
         <div className="text-center py-20 text-gray-400">
           <div className="text-5xl mb-4">🔍</div>
           <p className="text-lg">ไม่พบสินค้าที่ตรงกับการค้นหา</p>
