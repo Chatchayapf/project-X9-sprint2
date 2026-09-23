@@ -33,16 +33,16 @@ const SignIn = () => {
           <form className="w-full space-y-4" action="#" method="POST">
             <label className="form-control w-full ">
               <div className="label">
-                <span className="label-text font-semibold">Email address</span>
+                <span className="label-text font-semibold">Username or Email</span>
               </div>
               <input
                 id="email"
                 name="email"
-                type="email"
+                type="text"
                 autoComplete="email"
                 required
-                placeholder="jane@example.com"
-                className="input input-bordered input-primary w-full w-full border-2 border-gray-300 rounded-lg px-4 py-2"
+                placeholder="Username or Email"
+                className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
               />
             </label>
 

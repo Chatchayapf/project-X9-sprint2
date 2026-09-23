@@ -76,6 +76,20 @@ const SignUp = () => {
 
             <label className="form-control w-full">
               <div className="label">
+                <span className="label-text font-semibold">Username</span>
+              </div>
+              <input
+                id="username"
+                name="username"
+                type="text"
+                required
+                placeholder="janedoe"
+                className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
+              />
+            </label>
+
+            <label className="form-control w-full">
+              <div className="label">
                 <span className="label-text font-semibold">Password</span>
               </div>
               <input
