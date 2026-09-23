@@ -14,7 +14,6 @@ export const getUserProfile = async (req, res, next) => {
 export const updateUserProfile = async (req, res, next) => {
   try {
     const {
-      userId,
       firstname,
       lastname,
       birth_date,
@@ -24,7 +23,7 @@ export const updateUserProfile = async (req, res, next) => {
       password,
     } = req.body;
 
-    const user = await User.findById(userId);
+    const user = await User.findById(req.user._id);
 
     if (!user) {
       return res

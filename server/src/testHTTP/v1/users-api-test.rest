@@ -1,4 +1,35 @@
-@baseUrl = http://localhost:3002/api/v1/
+@baseUrl = http://localhost:3002/api/v1
 
-###
+### login user
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
 
+{
+  "email":"mongo@gmail.com",
+  "password":"123456"
+}
+
+### logout user
+POST {{baseUrl}}/auth/logout
+
+### get user profile
+GET {{baseUrl}}/users/me
+
+### update profile user
+PATCH {{baseUrl}}/users/me
+Content-Type: application/json
+
+{
+  "firstname":"สมปอง",
+  "lastname":"พิชิตโค้ด",
+  "birth_date":"1995-11-20T00:00:00.000Z",
+  "gender":"female"
+}
+
+### update profile user some field
+PATCH {{baseUrl}}/users/me
+Content-Type: application/json
+
+{
+  "username": "Sompong"
+}

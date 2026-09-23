@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { authUser } from "../../middlewares/auth.middleware";
+import { authUser } from "../../middlewares/auth.middleware.js";
 import {
   getUserProfile,
   updateUserProfile,
-} from "../../controllers/user.controller";
+} from "../../controllers/user.controller.js";
 
 export const router = Router();
 
