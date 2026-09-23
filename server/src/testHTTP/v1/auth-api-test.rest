@@ -1,0 +1,31 @@
+@baseUrl = http://localhost:3002/api/v1/auth
+
+### register user
+POST {{baseUrl}}/register
+Content-Type: application/json
+
+{
+    "firstname":"test",
+    "lastname":"Xter",
+    "username":"Dragonflyx",
+    "email":"mongox@gmail.com",
+    "password":"123456"
+}
+
+
+### login user
+
+POST {{baseUrl}}/login
+Content-Type: application/json
+
+{
+    "email":"mongo@gmail.com",
+    "password":"123456"
+}
+
+
+### logout user
+POST {{baseUrl}}/logout
+
+
+
