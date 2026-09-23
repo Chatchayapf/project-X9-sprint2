@@ -10,6 +10,7 @@ import SignUpPage from "./pages/SignUpPage";
 import AllProductsPage from "./pages/AllProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import { CartProvider } from "./context/CartContext/CartProvider";
+import { AuthProvider } from "./context/AuthContext/AuthProvider";
 
 const router = createBrowserRouter([
   {
@@ -33,7 +34,9 @@ const router = createBrowserRouter([
 function App() {
   return (
     <CartProvider>
-      <RouterProvider router={router} />
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
     </CartProvider>
   );
 }

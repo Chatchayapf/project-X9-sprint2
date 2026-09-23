@@ -1,7 +1,46 @@
 import { BookOpen } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext/AuthContext";
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const { register } = useAuth();
+  const [formData, setFormData] = useState({
+    firstname: "",
+    lastname: "",
+    email: "",
+    username: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    setLoading(true);
+    try {
+      const payload = { ...formData };
+      delete payload.confirmPassword;
+      await register(payload);
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col justify-center py-12 sm:px-6 lg:px-8"
@@ -28,18 +67,20 @@ const SignUp = () => {
             </Link>
           </p>
 
-          <form className="w-full space-y-4" action="#" method="POST">
+          <form className="w-full space-y-4" onSubmit={handleSubmit}>
             <div className="grid grid-cols-2 gap-4">
               <label className="form-control w-full">
                 <div className="label">
                   <span className="label-text font-semibold">First Name</span>
                 </div>
                 <input
-                  id="firstName"
-                  name="firstName"
+                  id="firstname"
+                  name="firstname"
                   type="text"
                   required
                   placeholder="Jane"
+                  value={formData.firstname}
+                  onChange={handleChange}
                   className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
                 />
               </label>
@@ -49,11 +90,13 @@ const SignUp = () => {
                   <span className="label-text font-semibold">Last Name</span>
                 </div>
                 <input
-                  id="lastName"
-                  name="lastName"
+                  id="lastname"
+                  name="lastname"
                   type="text"
                   required
                   placeholder="Doe"
+                  value={formData.lastname}
+                  onChange={handleChange}
                   className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
                 />
               </label>
@@ -70,6 +113,8 @@ const SignUp = () => {
                 autoComplete="email"
                 required
                 placeholder="jane@example.com"
+                value={formData.email}
+                onChange={handleChange}
                 className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
               />
             </label>
@@ -84,6 +129,8 @@ const SignUp = () => {
                 type="text"
                 required
                 placeholder="janedoe"
+                value={formData.username}
+                onChange={handleChange}
                 className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
               />
             </label>
@@ -99,6 +146,8 @@ const SignUp = () => {
                 autoComplete="new-password"
                 required
                 placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
                 className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
               />
             </label>
@@ -116,16 +165,25 @@ const SignUp = () => {
                 autoComplete="new-password"
                 required
                 placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
                 className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
               />
             </label>
+
+            {error && (
+              <div className="alert alert-error py-2 text-sm">
+                <span>{error}</span>
+              </div>
+            )}
 
             <div className="pt-4">
               <button
                 type="submit"
                 className="btn btn-primary w-full bg-amber-300"
+                disabled={loading}
               >
-                Create Account
+                {loading ? "Creating account..." : "Create Account"}
               </button>
             </div>
           </form>
