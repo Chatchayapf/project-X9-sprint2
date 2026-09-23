@@ -8,7 +8,6 @@ export default function ProductDetailPage() {
   const { handleAddToCart } = useCart();
   const { id } = useParams();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => {
@@ -18,21 +17,12 @@ export default function ProductDetailPage() {
         setProduct(data);
       } catch (error) {
         console.error("Error fetching product:", error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchProduct();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center py-32 text-base-content/50">
-        <span className="loading loading-spinner loading-lg"></span>
-        <p className="mt-4">กำลังโหลดข้อมูลสินค้า...</p>
-      </div>
-    );
-  }
+
 
   if (!product) {
     return (
