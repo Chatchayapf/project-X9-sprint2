@@ -45,6 +45,7 @@ export const updateUserProfile = async (req, res, next) => {
     const updatedUser = await user.save();
 
     res.status(200).json({
+      success: true,
       _id: updatedUser._id,
       firstname: updatedUser.firstname,
       lastname: updatedUser.lastname,
