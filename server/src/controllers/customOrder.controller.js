@@ -1,4 +1,5 @@
 import { CustomProduct } from "../models/customProduct.model.js";
+import { Order } from "../models/order.model.js";
 
 // ============================================
 // USER-FACING
@@ -152,8 +153,7 @@ export const getAllCustomOrders = async (req, res, next) => {
     }
 };
 
-// Approve a request and set its price. This is the only place price
-// gets attached to a CustomProduct — never trust price from checkout input.
+// Approve a request, set its price, and create its order.
 export const approveCustomOrder = async (req, res, next) => {
     try {
         const { id } = req.params;
@@ -165,23 +165,49 @@ export const approveCustomOrder = async (req, res, next) => {
                 .json({ message: "A valid non-negative price is required" });
         }
 
-        const customProduct = await CustomProduct.findById(id);
+        const customProduct = await CustomProduct.findOneAndUpdate(
+            { _id: id, status: "pending" },
+            { $set: { status: "approved", price } },
+            { new: true, runValidators: true },
+        );
 
         if (!customProduct) {
-            return res.status(404).json({ message: "Custom order not found" });
-        }
-
-        if (customProduct.status !== "pending") {
+            const existingCustomProduct = await CustomProduct.findById(id);
+            if (!existingCustomProduct) {
+                return res.status(404).json({ message: "Custom order not found" });
+            }
             return res.status(400).json({
-                message: `Cannot approve a request that is already '${customProduct.status}'`,
+                message: `Cannot approve a request that is already '${existingCustomProduct.status}'`,
             });
         }
 
-        customProduct.status = "approved";
-        customProduct.price = price;
+        let order;
+        try {
+            order = await Order.create({
+                order_type: "custom",
+                user_id: customProduct.user_id,
+                items: [
+                    {
+                        product_id: customProduct._id,
+                        product_model: "CustomProduct",
+                        quantity: 1,
+                        price,
+                        customization: { detail: customProduct.detail },
+                    },
+                ],
+                total_price: price,
+            });
+        } catch (error) {
+            customProduct.status = "pending";
+            customProduct.price = undefined;
+            await customProduct.save();
+            throw error;
+        }
+
+        customProduct.status = "in-progress";
         await customProduct.save();
 
-        res.status(200).json(customProduct);
+        res.status(201).json({ customOrder: customProduct, order });
     } catch (error) {
         next(error);
     }

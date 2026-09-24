@@ -2,17 +2,57 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext/CartContext';
 import { useAuth } from '../context/AuthContext/AuthContext';
+import { updateCartItem, removeCartItem } from '../services/cartServices';
 
 
 const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, removeItem: propRemoveItem }) => {
   const navigate = useNavigate();
   const cartContext = useCart();
   const { user, isLoggedIn, logout } = useAuth();
+  const { setCartItems } = cartContext;
   const cartItems = propCartItems || cartContext.cartItems || [];
   const updateQuantity = propUpdateQuantity || cartContext.updateQuantity;
   const removeItem = propRemoveItem || cartContext.removeItem;
 
   const [activeMenu, setActiveMenu] = useState('product');
+
+  const handleQuantityChange = async (id, change) => {
+    if (!isLoggedIn) {
+      updateQuantity?.(id, change);
+      return;
+    }
+
+    try {
+      const response = await updateCartItem(id, change > 0 ? 'increase' : 'decrease');
+      setCartItems(response.cart.map((entry) => ({
+        ...entry.product_id,
+        id: entry.product_id._id,
+        price: entry.product_price ?? entry.product_id.price,
+        quantity: entry.product_quantity,
+      })));
+    } catch (error) {
+      console.error('Could not update cart item:', error.message);
+    }
+  };
+
+  const handleRemoveItem = async (id) => {
+    if (!isLoggedIn) {
+      removeItem?.(id);
+      return;
+    }
+
+    try {
+      const response = await removeCartItem(id);
+      setCartItems(response.cart.map((entry) => ({
+        ...entry.product_id,
+        id: entry.product_id._id,
+        price: entry.product_price ?? entry.product_id.price,
+        quantity: entry.product_quantity,
+      })));
+    } catch (error) {
+      console.error('Could not remove cart item:', error.message);
+    }
+  };
 
   const menuItems = [
     { id: 'home', label: 'Home', path: '/' },
@@ -138,10 +178,10 @@ const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, 
                           <div className="text-xs text-base-content/60">฿{item.price}</div>
                         </div>
                         <div className="flex items-center gap-1">
-                          <button onClick={() => updateQuantity(item.id, -1)} className="btn btn-xs btn-circle btn-ghost">-</button>
+                          <button onClick={() => handleQuantityChange(item.id, -1)} className="btn btn-xs btn-circle btn-ghost">-</button>
                           <span className="text-sm w-4 text-center">{item.quantity}</span>
-                          <button onClick={() => updateQuantity(item.id, 1)} className="btn btn-xs btn-circle btn-ghost">+</button>
-                          <button onClick={() => removeItem(item.id)} className="btn btn-xs btn-circle btn-ghost text-error ml-1">✕</button>
+                          <button onClick={() => handleQuantityChange(item.id, 1)} className="btn btn-xs btn-circle btn-ghost">+</button>
+                          <button onClick={() => handleRemoveItem(item.id)} className="btn btn-xs btn-circle btn-ghost text-error ml-1">✕</button>
                         </div>
                       </div>
                     ))
@@ -177,6 +217,9 @@ const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, 
               </div>
               <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                 <li className="menu-title text-xs text-base-content/60">{user?.firstname} {user?.lastname}</li>
+                <li><Link to="/orders">My Orders</Link></li>
+                {user?.role === 'admin' && <li><Link to="/admin/orders">All Orders</Link></li>}
+                {user?.role === 'admin' && <li><Link to="/admin/custom-orders">Custom Orders</Link></li>}
                 <li><a onClick={() => { document.activeElement.blur(); logout(); }}>Logout</a></li>
               </ul>
             </div>
