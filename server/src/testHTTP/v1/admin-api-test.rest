@@ -1,0 +1,69 @@
+@baseUrl = http://localhost:3002/api/v1
+
+### login admin
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email":"admin@test.com",
+  "password":"123"
+}
+
+### login user
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email":"mongo@gmail.com",
+  "password":"123456"
+}
+
+### logout user
+POST {{baseUrl}}/auth/logout
+
+### get all products
+GET {{baseUrl}}/admin/products
+
+### Create Product
+POST {{baseUrl}}/admin/products
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="name"
+
+Test Admin Product
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="description"
+
+This is a test product created by admin.
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="price"
+
+999
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="quantity"
+
+50
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="tag"
+
+Templates
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="images"; filename="test.jpg"
+Content-Type: image/jpeg
+
+< ./test.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Update Product (Replace {id} with actual product ID)
+PATCH {{baseUrl}}/admin/products/6ab4ae1b3681a3307d396dc7
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="price"
+
+1299
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+### Delete Product (Replace {id} with actual product ID)
+DELETE {{baseUrl}}/admin/products/6ab4ae1b3681a3307d396dc7
