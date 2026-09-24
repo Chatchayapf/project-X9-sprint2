@@ -1,9 +1,50 @@
 import { BookOpen } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/AuthContext/AuthContext";
+
+const REMEMBER_KEY = "d9_remembered_login";
 
 const SignIn = () => {
-  const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
+  const { login, isLoggedIn } = useAuth();
+
+  const [savedLogin] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(REMEMBER_KEY) || "null");
+    } catch {
+      return null;
+    }
+  });
+
+  const [identifier, setIdentifier] = useState(savedLogin?.identifier || "");
+  const [password, setPassword] = useState(savedLogin?.password || "");
+  const [rememberMe, setRememberMe] = useState(Boolean(savedLogin?.identifier));
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      await login({ email: identifier, password });
+      if (rememberMe) {
+        localStorage.setItem(REMEMBER_KEY, JSON.stringify({ identifier, password }));
+      } else {
+        localStorage.removeItem(REMEMBER_KEY);
+      }
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col justify-center py-12 sm:px-6 lg:px-8"
@@ -30,18 +71,20 @@ const SignIn = () => {
             </Link>
           </p>
 
-          <form className="w-full space-y-4" action="#" method="POST">
+          <form className="w-full space-y-4" onSubmit={handleSubmit}>
             <label className="form-control w-full ">
               <div className="label">
                 <span className="label-text font-semibold">Username or Email</span>
               </div>
               <input
-                id="email"
-                name="email"
+                id="identifier"
+                name="identifier"
                 type="text"
                 autoComplete="email"
                 required
                 placeholder="Username or Email"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
                 className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
               />
             </label>
@@ -57,9 +100,17 @@ const SignIn = () => {
                 autoComplete="current-password"
                 required
                 placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 className="input input-bordered input-primary w-full border-2 border-gray-300 rounded-lg px-4 py-2"
               />
             </label>
+
+            {error && (
+              <div className="alert alert-error py-2 text-sm">
+                <span>{error}</span>
+              </div>
+            )}
 
             <div className="flex items-center justify-between pt-2">
               <label className="label cursor-pointer justify-start gap-2 p-0 ">
@@ -83,8 +134,8 @@ const SignIn = () => {
             </div>
 
             <div className="pt-4">
-              <button type="submit" className="btn btn-primary w-full">
-                Sign in
+              <button type="submit" className="btn btn-primary w-full" disabled={loading}>
+                {loading ? "Signing in..." : "Sign in"}
               </button>
             </div>
           </form>
