@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { checkoutCart } from '../services/checkoutServices';
 
 const Checkout = ({ cartItems, clearCart }) => {
   const navigate = useNavigate();
   const [isSuccess, setIsSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,13 +22,20 @@ const Checkout = ({ cartItems, clearCart }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
-    // Simulate API call and success (as per Sprint 2 instructions: "Real payment integration is not required")
-    setTimeout(() => {
+    setCheckoutError('');
+    setIsSubmitting(true);
+
+    try {
+      await checkoutCart();
       setIsSuccess(true);
       clearCart();
-    }, 800);
+    } catch (error) {
+      setCheckoutError(error.message || 'Checkout failed. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
@@ -40,6 +50,9 @@ const Checkout = ({ cartItems, clearCart }) => {
             ขอบคุณสำหรับการสั่งซื้อ ระบบได้ส่งรายละเอียดและลิงก์ดาวน์โหลดสินค้าไปที่อีเมล <span className="font-semibold text-base-content">{formData.email}</span> แล้ว
           </p>
           <div className="pt-4">
+            <button onClick={() => navigate('/orders')} className="btn btn-primary mr-2">
+              View My Orders
+            </button>
             <button onClick={() => navigate('/')} className="btn btn-primary">
               กลับสู่หน้าแรก
             </button>
@@ -136,7 +149,10 @@ const Checkout = ({ cartItems, clearCart }) => {
               <span className="text-primary text-xl">฿{total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
             </div>
 
-            <button type="submit" form="checkout-form" className="btn btn-primary w-full mt-6 text-lg">
+            {checkoutError && (
+              <p role="alert" className="text-error text-sm mt-4">{checkoutError}</p>
+            )}
+            <button type="submit" form="checkout-form" disabled={isSubmitting} className="btn btn-primary w-full mt-6 text-lg">
               ยืนยันการสั่งซื้อ (Place Order)
             </button>
             <p className="text-center text-xs text-base-content/50 mt-3">
