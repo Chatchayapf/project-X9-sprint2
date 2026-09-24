@@ -1,17 +1,17 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext/CartContext';
+import { useAuth } from '../context/AuthContext/AuthContext';
 
 
 const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, removeItem: propRemoveItem }) => {
   const navigate = useNavigate();
   const cartContext = useCart();
+  const { user, isLoggedIn, logout } = useAuth();
   const cartItems = propCartItems || cartContext.cartItems || [];
   const updateQuantity = propUpdateQuantity || cartContext.updateQuantity;
   const removeItem = propRemoveItem || cartContext.removeItem;
 
-  // State สำหรับจำลองการล็อกอิน (true = ล็อกอินแล้ว, false = ยังไม่ล็อกอิน)
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [activeMenu, setActiveMenu] = useState('product');
 
   const menuItems = [
@@ -170,19 +170,26 @@ const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, 
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
                 <div className="bg-neutral text-neutral-content rounded-full w-10">
-                  <span className="text-xs">UI</span>
+                  <span className="text-xs">
+                    {user?.firstname?.[0]?.toUpperCase() || ''}{user?.lastname?.[0]?.toUpperCase() || ''}
+                  </span>
                 </div>
               </div>
               <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-                <li><a onClick={() => setIsLoggedIn(false)}>Logout</a></li>
+                <li className="menu-title text-xs text-base-content/60">{user?.firstname} {user?.lastname}</li>
+                <li><a onClick={() => { document.activeElement.blur(); logout(); }}>Logout</a></li>
               </ul>
             </div>
           ) : (
             <Link
               to="/signin"
-              className="btn btn-primary btn-sm"
+              className="btn btn-ghost btn-circle"
+              aria-label="Login"
+              title="Login"
             >
-              Login/register
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
             </Link>
           )}
         </div>

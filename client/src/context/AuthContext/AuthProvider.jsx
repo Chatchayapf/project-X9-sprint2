@@ -2,11 +2,12 @@ import { useEffect, useState } from "react";
 import {
   login as authLogin,
   logout as authLogout,
+  register as authRegister,
 } from "../../services/authServices";
 import { getUserProfile } from "../../services/userServices";
 import { AuthContext } from "./AuthContext";
 
-export const AuthProvider = ({ Children }) => {
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,8 +23,15 @@ export const AuthProvider = ({ Children }) => {
       }
     };
 
-    checkAuth;
+    checkAuth();
   }, []);
+  
+  const register = async (userData) => {
+    const res = await authRegister(userData);
+    const profileRes = await getUserProfile();
+    setUser(profileRes.data);
+    return res;
+  };
 
   const login = async (credentials) => {
     const res = await authLogin(credentials);
@@ -38,8 +46,18 @@ export const AuthProvider = ({ Children }) => {
   };
 
   return (
-    <AuthContext value={{ user, setUser, loading, login, logout }}>
-      {!loading && Children}
+    <AuthContext
+      value={{
+        user,
+        setUser,
+        loading,
+        login,
+        register,
+        logout,
+        isLoggedIn: !!user,
+      }}
+    >
+      {!loading && children}
     </AuthContext>
   );
 };
