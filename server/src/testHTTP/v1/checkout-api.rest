@@ -1,0 +1,14 @@
+@baseUrl = http://localhost:3002/api/v1
+
+### checkout normal items
+POST {{baseUrl}}/checkout
+
+### checkout custom item
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{
+  "name": "Custom Logo Design",
+  "detail": "Minimalist logo, blue and white theme, need it by end of month",
+  "tags": ["logo", "branding"]
+}

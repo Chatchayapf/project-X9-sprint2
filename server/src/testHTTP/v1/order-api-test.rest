@@ -1,0 +1,163 @@
+@baseUrl = http://localhost:3002/api/v1
+
+### Login with admin auth
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@test.com",
+  "password": "123"
+}
+
+### logout user
+POST {{baseUrl}}/auth/logout
+
+
+
+### ============================================
+### USER-FACING: getMyOrders
+### ============================================
+
+### get my orders (should return array, newest first)
+GET {{baseUrl}}/orders
+
+### no auth token -> 400 "No token!"
+GET {{baseUrl}}/orders
+Cookie: accessToken=
+
+### ============================================
+### USER-FACING: getOrderById
+### ============================================
+
+### get one of my own orders -> 200
+GET {{baseUrl}}/orders/6ab3e4a626484e17b6be8691
+
+### order does not exist -> 404
+GET {{baseUrl}}/orders/000000000000000000000000
+
+### malformed id -> likely CastError, check it's caught cleanly
+GET {{baseUrl}}/orders/6ab3e4a626484assd6be8691
+
+### order belongs to a DIFFERENT user -> should be 404, NOT 200 or 403
+# (log in as User B, then try to fetch an order that belongs to User A)
+GET {{baseUrl}}/orders/PASTE_ANOTHER_USERS_ORDER_ID
+
+### ============================================
+### USER-FACING: cancelOrder
+### ============================================
+
+### cancel an order currently "pending" -> 200, order_status becomes "cancelled"
+PATCH {{baseUrl}}/orders/PASTE_A_PENDING_ORDER_ID/cancel
+
+### cancel an order currently "processing" -> 200, allowed
+PATCH {{baseUrl}}/orders/PASTE_A_PROCESSING_ORDER_ID/cancel
+
+### try to cancel an order already "shipped" -> 400
+PATCH {{baseUrl}}/orders/PASTE_A_SHIPPED_ORDER_ID/cancel
+
+### try to cancel an order already "delivered" -> 400
+PATCH {{baseUrl}}/orders/PASTE_A_DELIVERED_ORDER_ID/cancel
+
+### try to cancel an order already "cancelled" -> 400
+PATCH {{baseUrl}}/orders/PASTE_AN_ALREADY_CANCELLED_ORDER_ID/cancel
+
+### try to cancel an order that doesn't belong to you -> 404
+PATCH {{baseUrl}}/orders/PASTE_ANOTHER_USERS_ORDER_ID/cancel
+
+### order id doesn't exist -> 404
+PATCH {{baseUrl}}/orders/000000000000000000000000/cancel
+
+### ============================================
+### ADMIN: getAllOrders
+### ============================================
+
+### get all orders, no filter -> 200, all orders across all users
+GET {{baseUrl}}/orders/admin/all
+
+### filter by order_status
+GET {{baseUrl}}/orders/admin/all?order_status=pending
+
+### filter by payment_status
+GET {{baseUrl}}/orders/admin/all?payment_status=paid
+
+### filter by both
+GET {{baseUrl}}/orders/admin/all?order_status=processing&payment_status=pending
+
+### non-admin user hits this route -> 403 (assuming authAdmin returns 403)
+GET {{baseUrl}}/orders/admin/all
+
+### ============================================
+### ADMIN: updateOrderStatus
+### ============================================
+
+### valid transition -> 200
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID/status
+Content-Type: application/json
+
+{
+  "order_status": "processing"
+}
+
+### invalid status value -> 400
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID/status
+Content-Type: application/json
+
+{
+  "order_status": "on-its-way"
+}
+
+### missing order_status -> 400
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID/status
+Content-Type: application/json
+
+{}
+
+### order id doesn't exist -> 404
+PATCH {{baseUrl}}/orders/000000000000000000000000/status
+Content-Type: application/json
+
+{
+  "order_status": "shipped"
+}
+
+### non-admin attempts this -> 403
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID/status
+Content-Type: application/json
+
+{
+  "order_status": "shipped"
+}
+
+### ============================================
+### ADMIN: updatePaymentStatus
+### ============================================
+
+### valid transition -> 200
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID/payment
+Content-Type: application/json
+
+{
+  "payment_status": "paid"
+}
+
+### invalid payment_status value -> 400
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID/payment
+Content-Type: application/json
+
+{
+  "payment_status": "half-paid"
+}
+
+### missing payment_status -> 400
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID/payment
+Content-Type: application/json
+
+{}
+
+### order id doesn't exist -> 404
+PATCH {{baseUrl}}/orders/000000000000000000000000/payment
+Content-Type: application/json
+
+{
+  "payment_status": "refunded"
+}
