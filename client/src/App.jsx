@@ -9,6 +9,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import SignUpPage from "./pages/SignUpPage";
 import AllProductsPage from "./pages/AllProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import UserProfilePage from "./pages/UserProfilePage";
 import { CartProvider } from "./context/CartContext/CartProvider";
 import { AuthProvider } from "./context/AuthContext/AuthProvider";
 
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
       { path: "signin", element: <SignInPage /> },
       { path: "signup", element: <SignUpPage /> },
       { path: "checkout", element: <CheckoutPage /> },
+      { path: "users/me", element: <UserProfilePage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
