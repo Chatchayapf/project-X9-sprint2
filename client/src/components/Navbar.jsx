@@ -169,7 +169,7 @@ const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, 
           {isLoggedIn ? (
             <div className="dropdown dropdown-end">
               <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar placeholder">
-                <div className="bg-neutral text-neutral-content rounded-full w-10">
+                <div className="bg-primary/10 text-primary font-semibold rounded-full w-10 h-10 flex items-center justify-center border border-primary/20">
                   <span className="text-xs">
                     {user?.firstname?.[0]?.toUpperCase() || ''}{user?.lastname?.[0]?.toUpperCase() || ''}
                   </span>
