@@ -1,23 +1,38 @@
 import { Router } from "express";
+import { authUser, authAdmin } from "../../middlewares/auth.middleware.js";
+import {
+    getMyOrders,
+    getOrderById,
+    cancelOrder,
+    getAllOrders,
+    updateOrderStatus,
+    updatePaymentStatus,
+} from "../../controllers/order.controller.js";
 
 export const router = Router();
 
-// User side
-// Get order list
-router.get("/", authUser, getMyOrders);              // user's own order history
+// ============================================
+// USER-FACING
+// ============================================
 
-// Get one order 
-router.get("/:id", authUser, getOrderById);          // single order detail (verify ownership!)
+// Get all of my orders
+router.get("/", authUser, getMyOrders);
 
-// Cancle order 
-router.patch("/:id/cancel", authUser, cancelOrder);  // user cancels while still "pending"/"processing"
+// Get one of my orders by id
+router.get("/:id", authUser, getOrderById);
 
-// Admin side
-// Get all order list
-router.get("/admin/all", authAdmin, getAllOrders);
+// Cancel one of my orders (only while pending/processing)
+router.patch("/:id/cancel", authUser, cancelOrder);
 
-// Update order status
-router.patch("/:id/status", authAdmin, updateOrderStatus);   // pending -> processing -> shipped -> delivered
+// ============================================
+// ADMIN
+// ============================================
 
-// Update payment status
-router.patch("/:id/payment", authAdmin, updatePaymentStatus); // pending -> paid/failed/refunded
+// Get all orders (optionally ?order_status=&payment_status=)
+router.get("/admin/all", authUser, authAdmin, getAllOrders);
+
+// Update an order's fulfillment status
+router.patch("/:id/status", authUser, authAdmin, updateOrderStatus);
+
+// Update an order's payment status
+router.patch("/:id/payment", authUser, authAdmin, updatePaymentStatus);
