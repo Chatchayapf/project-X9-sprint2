@@ -9,9 +9,12 @@ import CheckoutPage from "./pages/CheckoutPage";
 import SignUpPage from "./pages/SignUpPage";
 import AllProductsPage from "./pages/AllProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
-import UserProfilePage from "./pages/UserProfilePage";
+import OrdersPage from "./pages/OrdersPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminCustomOrdersPage from "./pages/AdminCustomOrdersPage";
 import { CartProvider } from "./context/CartContext/CartProvider";
 import { AuthProvider } from "./context/AuthContext/AuthProvider";
+import UserProfilePage from "./pages/UserProfilePage";
 
 const router = createBrowserRouter([
   {
@@ -28,6 +31,9 @@ const router = createBrowserRouter([
       { path: "signup", element: <SignUpPage /> },
       { path: "checkout", element: <CheckoutPage /> },
       { path: "users/me", element: <UserProfilePage /> },
+      { path: "orders", element: <OrdersPage /> },
+      { path: "admin/orders", element: <AdminOrdersPage /> },
+      { path: "admin/custom-orders", element: <AdminCustomOrdersPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
@@ -35,11 +41,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
-    <CartProvider>
-      <AuthProvider>
+    <AuthProvider>
+      <CartProvider>
         <RouterProvider router={router} />
-      </AuthProvider>
-    </CartProvider>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

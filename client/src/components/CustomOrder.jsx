@@ -1,13 +1,39 @@
 import { useState } from 'react';
 import { Send, CheckCircle2, Calendar, Shirt, Gift, FileCode } from 'lucide-react';
+import { createCustomOrder } from '../services/customOrderServices';
 
 export default function CustomOrder() {
   const [submitted, setSubmitted] = useState(false)
   const [designType, setDesignType] = useState('shirt_design')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setSubmitted(true)
+    setSubmitError('')
+    setIsSubmitting(true)
+
+    const form = e.currentTarget
+    const formData = new FormData(form)
+    const contactName = formData.get('contactName').trim()
+    const contactInfo = formData.get('contactInfo').trim()
+    const brief = formData.get('detail').trim()
+    const deadline = formData.get('deadline_date')
+
+    try {
+      await createCustomOrder({
+        name: contactName,
+        detail: `Contact: ${contactInfo}\n\nBrief: ${brief}`,
+        tags: [designType],
+        ...(deadline ? { deadline_date: deadline } : {}),
+      })
+      setSubmitted(true)
+      form.reset()
+    } catch (error) {
+      setSubmitError(error.message || 'Could not submit your custom order. Please try again.')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -78,6 +104,7 @@ export default function CustomOrder() {
               </div>
               <input
                 required
+                name="contactName"
                 type="text"
                 placeholder="เช่น โรงเรียน... หรือ คุณสมชาย"
                 className="input input-bordered w-full focus:input-primary"
@@ -89,6 +116,7 @@ export default function CustomOrder() {
               </div>
               <input
                 required
+                name="contactInfo"
                 type="text"
                 placeholder="email@domain.com หรือ Line ID"
                 className="input input-bordered w-full focus:input-primary"
@@ -103,6 +131,7 @@ export default function CustomOrder() {
             </div>
             <textarea
               required
+              name="detail"
               rows={4}
               placeholder="อธิบายแนวคิด ธีม สี ข้อความที่ต้องการใส่ หรือรูปแบบที่ต้องการ..."
               className="textarea textarea-bordered w-full focus:textarea-primary"
@@ -119,13 +148,18 @@ export default function CustomOrder() {
             </div>
             <input
               type="date"
+              name="deadline_date"
               className="input input-bordered w-full focus:input-primary"
             />
           </label>
 
           {/* Submit */}
+          {submitError && (
+            <p role="alert" className="text-error text-sm">{submitError}</p>
+          )}
           <button
             type="submit"
+            disabled={isSubmitting}
             className="btn btn-primary w-full mt-4"
           >
             <Send className="w-4 h-4" />
