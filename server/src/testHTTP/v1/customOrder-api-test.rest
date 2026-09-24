@@ -1,0 +1,257 @@
+@baseUrl = http://localhost:3002/api/v1
+
+### ============================================
+### SETUP: log in first (cookie carries through the rest of the file)
+### ============================================
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "Ptest@example.com",
+  "password": "111111111"
+}
+
+### ============================================
+### STEP 1: submit a custom request (as regular user)
+### ============================================
+POST {{baseUrl}}/custom-order
+Content-Type: application/json
+
+{
+  "name": "Custom Logo Design",
+  "detail": "Minimalist logo, blue and white theme, need it by end of month",
+  "tags": ["logo", "branding"],
+  "deadline_date": "2026-10-31"
+}
+
+### check status is "pending" and price is absent/undefined
+GET {{baseUrl}}/custom-order/6ab4cceda647bb2916f58d48
+
+### ============================================
+### STEP 1 FAILURES
+### ============================================
+
+### missing detail -> 400
+POST {{baseUrl}}/custom-order
+Content-Type: application/json
+
+{
+  "name": "No detail here"
+}
+
+### detail is empty/whitespace -> 400
+POST {{baseUrl}}/custom-order
+Content-Type: application/json
+
+{
+  "name": "Test",
+  "detail": "   "
+}
+
+### ============================================
+### STEP 2: user edits the draft while still pending
+### ============================================
+PATCH {{baseUrl}}/custom-order/6ab4cceda647bb2916f58d48
+Content-Type: application/json
+
+{
+  "detail": "Minimalist logo, blue and white theme, updated: needs a dark-mode variant too"
+}
+
+### ============================================
+### STEP 3: switch to an ADMIN session, view pending requests
+### (log in as your admin test user first)
+### ============================================
+GET {{baseUrl}}/custom-order/admin/all?status=pending
+
+### ============================================
+### STEP 4: admin approves and sets a price
+### ============================================
+PATCH {{baseUrl}}/custom-order/6ab4cceda647bb2916f58d48/approve
+Content-Type: application/json
+
+{
+  "price": 750
+}
+
+### confirm status is now "approved" and price is 750
+GET {{baseUrl}}/custom-order/6ab4cceda647bb2916f58d48
+
+### ============================================
+### STEP 4 FAILURES
+### ============================================
+
+### missing price -> 400
+PATCH {{baseUrl}}/custom-order/PASTE_ID_FROM_STEP_1/approve
+Content-Type: application/json
+
+{}
+
+### negative price -> 400
+PATCH {{baseUrl}}/custom-order/PASTE_ID_FROM_STEP_1/approve
+Content-Type: application/json
+
+{
+  "price": -50
+}
+
+### trying to approve something already approved -> 400
+PATCH {{baseUrl}}/custom-order/PASTE_ID_FROM_STEP_1/approve
+Content-Type: application/json
+
+{
+  "price": 999
+}
+
+### non-admin attempts approval -> 403
+PATCH {{baseUrl}}/custom-order/PASTE_ID_FROM_STEP_1/approve
+Content-Type: application/json
+
+{
+  "price": 750
+}
+
+### ============================================
+### STEP 5: switch back to the ORIGINAL user, checkout the approved item
+### ============================================
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{
+  "custom_product_id": "PASTE_ID_FROM_STEP_1"
+}
+
+### confirm order response: order_type "custom", items[0].product_model
+### "CustomProduct", price 750, total_price 750
+
+### confirm the CustomProduct status flipped to "in-progress"
+GET {{baseUrl}}/custom-order/PASTE_ID_FROM_STEP_1
+
+### ============================================
+### STEP 5 FAILURES
+### ============================================
+
+### checkout the SAME item again -> 400 (already in-progress, not approved)
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{
+  "custom_product_id": "PASTE_ID_FROM_STEP_1"
+}
+
+### checkout a still-pending item (never approved) -> 400
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{
+  "custom_product_id": "PASTE_A_PENDING_CUSTOM_PRODUCT_ID"
+}
+
+### checkout someone else's approved item -> 403
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{
+  "custom_product_id": "PASTE_ANOTHER_USERS_APPROVED_ID"
+}
+
+### missing custom_product_id -> 400
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{}
+
+### nonexistent custom_product_id -> 404
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{
+  "custom_product_id": "000000000000000000000000"
+}
+
+### ============================================
+### STEP 6: verify the order shows up under the user's order history
+### ============================================
+GET {{baseUrl}}/orders
+
+### fetch it directly by id
+GET {{baseUrl}}/orders/PASTE_ORDER_ID_FROM_STEP_5
+
+### ============================================
+### STEP 7: admin views/manages the resulting order
+### ============================================
+GET {{baseUrl}}/orders/admin/all?order_status=pending
+
+### admin marks it as processing
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID_FROM_STEP_5/status
+Content-Type: application/json
+
+{
+  "order_status": "processing"
+}
+
+### admin marks payment as paid
+PATCH {{baseUrl}}/orders/PASTE_ORDER_ID_FROM_STEP_5/payment
+Content-Type: application/json
+
+{
+  "payment_status": "paid"
+}
+
+### ============================================
+### SIDE PATH: rejection flow
+### ============================================
+
+### submit another custom request
+POST {{baseUrl}}/custom-order
+Content-Type: application/json
+
+{
+  "name": "Rejected Test",
+  "detail": "This one should get rejected"
+}
+
+### admin rejects it
+PATCH {{baseUrl}}/custom-order/PASTE_NEW_ID/reject
+Content-Type: application/json
+
+### confirm status is "rejected"
+GET {{baseUrl}}/custom-order/PASTE_NEW_ID
+
+### attempt checkout on a rejected item -> 400
+POST {{baseUrl}}/checkout/custom
+Content-Type: application/json
+
+{
+  "custom_product_id": "PASTE_NEW_ID"
+}
+
+### attempt to edit a rejected item -> 400
+PATCH {{baseUrl}}/custom-order/PASTE_NEW_ID
+Content-Type: application/json
+
+{
+  "detail": "trying to sneak an edit in"
+}
+
+### attempt to cancel a rejected item -> 400
+DELETE {{baseUrl}}/custom-order/PASTE_NEW_ID
+
+### ============================================
+### SIDE PATH: user cancels before any admin action
+### ============================================
+
+### submit a request
+POST {{baseUrl}}/custom-order
+Content-Type: application/json
+
+{
+  "name": "Will Cancel",
+  "detail": "Testing withdrawal"
+}
+
+### cancel it -> 200, deleted
+DELETE {{baseUrl}}/custom-order/PASTE_CANCEL_TEST_ID
+
+### confirm it's gone -> 404
+GET {{baseUrl}}/custom-order/PASTE_CANCEL_TEST_ID

@@ -1,15 +1,19 @@
 import { Order } from "../models/order.model.js";
 import { Product } from "../models/product.model.js";
+import { CustomProduct } from "../models/customProduct.model.js";
 import { User } from "../models/user.model.js";
-import { CustomProduct } from "../models/customProduct.model.js"
 
-// Checkout: create an order from the user's cart, then clear the cart
+// ============================================
+// Checkout: standard cart items
+// (unchanged from before)
+// ============================================
 export const checkoutNormalItems = async (req, res, next) => {
     try {
-        const user = await User.findById(req.user.id).select("cart");
+        const user = await User.findById(req.user.id);
         if (!user) return res.status(404).json({ message: "User not found" });
-        if (!user.cart.length)
+        if (!user.cart.length) {
             return res.status(400).json({ message: "Cart is empty" });
+        }
 
         const items = [];
         let totalPrice = 0;
@@ -21,20 +25,32 @@ export const checkoutNormalItems = async (req, res, next) => {
                     message: `Product not found: ${cartItem.product_id}`,
                 });
             }
-            totalPrice += product.price * cartItem.product_quantity;
+            if (product.quantity < cartItem.product_quantity) {
+                return res
+                    .status(400)
+                    .json({ message: `Insufficient stock for ${product.name}` });
+            }
+
+            const price = product.price;
+            totalPrice += price * cartItem.product_quantity;
+
             items.push({
                 product_id: cartItem.product_id,
                 product_model: "Product",
                 quantity: cartItem.product_quantity,
-                price: product.price,
+                price,
             });
         }
 
         const order = await Order.create({
+            order_type: "standard",
             user_id: user._id,
             items,
             total_price: totalPrice,
         });
+
+        user.cart = [];
+        await user.save();
 
         res.status(200).json(order);
     } catch (error) {
@@ -42,41 +58,72 @@ export const checkoutNormalItems = async (req, res, next) => {
     }
 };
 
-// Checkout Custom item
+// ============================================
+// Checkout: custom item
+// Now only turns an ALREADY-APPROVED CustomProduct into an Order.
+// It does NOT create a CustomProduct anymore — that happens in
+// customOrder.routes.js (createCustomOrder), and approval (with price)
+// happens via customOrder.routes.js's approveCustomOrder.
+// ============================================
 export const checkoutCustomItems = async (req, res, next) => {
-  try {
-    const { name, detail, tags } = req.body; // custom item data from frontend
+    try {
+        const { custom_product_id } = req.body;
 
-    if (!detail) {
-      return res.status(400).json({ message: "detail is required" });
+        if (!custom_product_id) {
+            return res
+                .status(400)
+                .json({ message: "custom_product_id is required" });
+        }
+
+        const customProduct = await CustomProduct.findById(custom_product_id);
+
+        if (!customProduct) {
+            return res.status(404).json({ message: "Custom product not found" });
+        }
+
+        // Ownership check — prevent checking out someone else's custom request
+        if (customProduct.user_id.toString() !== req.user.id) {
+            return res
+                .status(403)
+                .json({ message: "Not authorized to checkout this item" });
+        }
+
+        // Must be approved before it can be ordered
+        if (customProduct.status !== "approved") {
+            return res.status(400).json({
+                message: `Custom item is not approved for checkout (current status: ${customProduct.status})`,
+            });
+        }
+
+        // Price must have been set during approval
+        if (typeof customProduct.price !== "number") {
+            return res
+                .status(400)
+                .json({ message: "Custom item has no price set" });
+        }
+
+        const order = await Order.create({
+            order_type: "custom",
+            user_id: req.user.id,
+            items: [
+                {
+                    product_id: customProduct._id,
+                    product_model: "CustomProduct",
+                    quantity: 1,
+                    price: customProduct.price,
+                    customization: { detail: customProduct.detail },
+                },
+            ],
+            total_price: customProduct.price,
+        });
+
+        // Mark as in-progress so it can't be checked out twice.
+        // Reuses the existing "in-progress" enum value — no schema change needed.
+        customProduct.status = "in-progress";
+        await customProduct.save();
+
+        res.status(200).json(order);
+    } catch (error) {
+        next(error);
     }
-
-    const customItem = await CustomProduct.create({
-      name,
-      detail,
-      tags,
-      user_id: req.user.id,
-      status: "pending", // still needs review — price is NOT trusted from client
-    });
-
-    const CUSTOM_ITEM_PRICE = 500; // server-controlled, not from req.body
-
-    const order = await Order.create({
-      order_type: "custom",
-      user_id: req.user.id,
-      items: [{
-        product_id: customItem._id,
-        product_model: "CustomProduct",
-        quantity: 1,
-        price: CUSTOM_ITEM_PRICE,
-        customization: { detail: customItem.detail },
-      }],
-      total_price: CUSTOM_ITEM_PRICE,
-      payment_status: "pending", // don't mark paid until you actually confirm payment
-    });
-
-    res.status(200).json({ customItem, order });
-  } catch (error) {
-    next(error);
-  }
 };
