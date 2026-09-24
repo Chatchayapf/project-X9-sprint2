@@ -2,7 +2,7 @@ import apiClient from "../api/apiClient";
 
 const USERS_PATH = "/users/me";
 
-export const getProfile = () => {
+export const getUserProfile = () => {
   return apiClient.get(USERS_PATH);
 };
 
