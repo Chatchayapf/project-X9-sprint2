@@ -1,23 +1,35 @@
-@baseUrl = http://localhost:3002/api/v1/users
+@baseUrl = http://localhost:3002/api/v1
 
-
-### Read user profile เทสในกรณี (user)
-GET {{baseUrl}}/me
+### login user
+POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
-  "userId": "6ab0ea91182ea7f4d8e3ca92"
+  "email":"mongo@gmail.com",
+  "password":"123456"
 }
 
-### Update user profile เทสในกรณี (user)
-PATCH  {{baseUrl}}/me
+### logout user
+POST {{baseUrl}}/auth/logout
+
+### get user profile
+GET {{baseUrl}}/users/me
+
+### update profile user
+PATCH {{baseUrl}}/users/me
 Content-Type: application/json
 
 {
-  "userId": "6ab0ea91182ea7f4d8e3ca92",
-  "firstname": "สมเสร็จ",
-  "lastname": "ระบบเยี่ยม"
+  "firstname":"สมปอง",
+  "lastname":"พิชิตโค้ด",
+  "birth_date":"1995-11-20T00:00:00.000Z",
+  "gender":"female"
 }
 
-### Read all users เทสในกรณี (admin)
-GET {{baseUrl}}
+### update profile user some field
+PATCH {{baseUrl}}/users/me
+Content-Type: application/json
+
+{
+  "username": "Sompong"
+}

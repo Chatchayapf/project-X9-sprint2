@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { products } from '../data/products';
+import { getProducts } from '../services/productsServices';
 import { useCart } from '../context/CartContext/CartContext';
 
 const filterTabs = ['All type', 'Ebook', 'Template', 'Souvenir', 'T-shirt Design'];
@@ -11,12 +11,25 @@ export default function AllProductsPage() {
   const initialFilter = location.state?.filter ?? 'All type';
   const [activeFilter, setActiveFilter] = useState(initialFilter);
   const [search, setSearch] = useState('');
+  const [products, setProducts] = useState([]);
 
-  const filtered = products.filter((p) => {
-    const matchFilter = activeFilter === 'All type' || p.tag === activeFilter;
-    const matchSearch = (p.name || '').toLowerCase().includes(search.toLowerCase());
-    return matchFilter && matchSearch;
-  });
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const data = await getProducts(search, activeFilter);
+        setProducts(data);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+      }
+    };
+
+    // Debounce search
+    const timeoutId = setTimeout(() => {
+      fetchProducts();
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [search, activeFilter]);
 
   return (
     <div className="w-full px-4 md:px-8 lg:px-12 py-10">
@@ -31,7 +44,7 @@ export default function AllProductsPage() {
           </Link>
           <h1 className="text-3xl font-bold text-base-content">สินค้าทั้งหมด</h1>
           <p className="text-base-content/50 text-sm mt-1">
-            แสดง {filtered.length} รายการ จากทั้งหมด {products.length} รายการ
+            แสดง {products.length} รายการ
           </p>
         </div>
         {/* Search */}
@@ -64,18 +77,18 @@ export default function AllProductsPage() {
 
       {/* Product Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
-        {filtered.map((product) => (
+        {products.map((product) => (
           <div
-            key={product.id}
+            key={product._id}
             className="card bg-base-100 shadow-sm hover:shadow-md transition-shadow duration-200 border border-base-200"
           >
             {/* รูปสินค้า — คลิกเพื่อดูรายละเอียด */}
             <Link
-              to={`/product/${product.id}`}
+              to={`/product/${product._id}`}
               className="block relative group/img w-full aspect-square bg-base-200 flex items-center justify-center overflow-hidden cursor-pointer"
             >
               <img 
-                src={`/images/products/product-${product.id}.jpg`} 
+                src={product.img_url ? product.img_url[0] : `/images/products/product-${product._id}.jpg`} 
                 alt={product.name} 
                 className="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-500" 
               />
@@ -100,7 +113,9 @@ export default function AllProductsPage() {
                 <span className="text-warning">★</span>
                 <span>{product.rating}</span>
                 <span className="opacity-70">({product.reviews})</span>
-                <span className="ml-auto opacity-70 truncate max-w-[50px]">โหลด {product.quantity.toLocaleString()}</span>
+                <span className="ml-auto opacity-70 truncate max-w-[80px]">
+                  {product.details?.pages || product.details?.slides || product.details?.quantity || ""}
+                </span>
               </div>
               <div className="card-actions justify-between items-center mt-auto pt-2 border-t border-base-200">
                 <span className="text-sm font-bold">฿{product.price}</span>
@@ -119,7 +134,7 @@ export default function AllProductsPage() {
         ))}
       </div>
 
-      {filtered.length === 0 && (
+      {products.length === 0 && (
         <div className="text-center py-20 text-gray-400">
           <div className="text-5xl mb-4">🔍</div>
           <p className="text-lg">ไม่พบสินค้าที่ตรงกับการค้นหา</p>

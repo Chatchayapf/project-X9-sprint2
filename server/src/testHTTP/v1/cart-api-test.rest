@@ -1,0 +1,50 @@
+@baseUrl = http://localhost:3002/api/v1
+
+### login
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "Ptest@example.com",
+  "password": "111111111"
+}
+
+### logout user
+POST {{baseUrl}}/auth/logout
+
+### get items in cart
+GET {{baseUrl}}/cart
+
+### add item to cart
+POST {{baseUrl}}/cart/items
+Content-Type: application/json
+
+{
+  "product_id": "6aac0060168899311d4475ef",
+  "product_quantity": 2
+}
+
+### increase item quantity
+PATCH {{baseUrl}}/cart/items/6aac0060168899311d4475ef
+Content-Type: application/json
+
+{
+  "action": "increase"
+}
+
+### decrease item quantity
+PATCH {{baseUrl}}/cart/items/6aac0060168899311d4475ef
+Content-Type: application/json
+
+{
+  "action": "decrease"
+}
+
+### delete items
+DELETE {{baseUrl}}/cart/items/6aac0060168899311d4475ef
+
+
+
+// fail test
+### no login test
+GET {{baseUrl}}/cart

@@ -1,55 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import {
+  login as authLogin,
+  logout as authLogout,
+} from "../../services/authServices";
+import { getUserProfile } from "../../services/userServices";
 import { AuthContext } from "./AuthContext";
-import * as authService from "../../services/authServices";
 
-const STORAGE_KEY = "auth_user";
+export const AuthProvider = ({ Children }) => {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      return stored ? JSON.parse(stored) : null;
-    } catch {
-      return null;
-    }
-  });
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const res = await getUserProfile();
+        setUser(res.data);
+      } catch {
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleAuthSuccess = (data) => {
-    setUser(data.user);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data.user));
-    return data.user;
-  };
+    checkAuth;
+  }, []);
 
   const login = async (credentials) => {
-    const data = await authService.login(credentials);
-    return handleAuthSuccess(data);
-  };
-
-  const register = async (userData) => {
-    const data = await authService.register(userData);
-    return handleAuthSuccess(data);
+    const res = await authLogin(credentials);
+    const profileRes = await getUserProfile();
+    setUser(profileRes.data);
+    return res;
   };
 
   const logout = async () => {
-    try {
-      await authService.logout();
-    } finally {
-      setUser(null);
-      localStorage.removeItem(STORAGE_KEY);
-    }
+    await authLogout();
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isLoggedIn: Boolean(user),
-        login,
-        register,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <AuthContext value={{ user, setUser, loading, login, logout }}>
+      {!loading && Children}
+    </AuthContext>
   );
 };
