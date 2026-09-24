@@ -107,7 +107,7 @@ const SignIn = () => {
             </label>
 
             {error && (
-              <div className="alert alert-error py-2 text-sm">
+              <div className="alert alert-error mt-4 py-2 text-sm">
                 <span>{error}</span>
               </div>
             )}
