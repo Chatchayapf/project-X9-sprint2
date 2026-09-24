@@ -10,7 +10,7 @@ const generateAccessToken = (userId) => {
 const cookieOptions = (maxAge) => ({
   httpOnly: true,
   maxAge,
-  sameSite: "lax",
+  sameSite: "none",
   secure: process.env.NODE_ENV === "production",
 });
 
@@ -126,7 +126,7 @@ export const logout = async (req, res, next) => {
   try {
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: "lax",
+      sameSite: "none",
       secure: process.env.NODE_ENV === "production",
       path: "/",
     });
