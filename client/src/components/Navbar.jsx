@@ -177,7 +177,7 @@ const Navbar = ({ cartItems: propCartItems, updateQuantity: propUpdateQuantity, 
               </div>
               <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
                 <li className="menu-title text-xs text-base-content/60">{user?.firstname} {user?.lastname}</li>
-                <li><a onClick={() => logout()}>Logout</a></li>
+                <li><a onClick={() => { document.activeElement.blur(); logout(); }}>Logout</a></li>
               </ul>
             </div>
           ) : (

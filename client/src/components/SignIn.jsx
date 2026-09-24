@@ -1,14 +1,25 @@
 import { BookOpen } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext/AuthContext";
 
+const REMEMBER_KEY = "d9_remembered_login";
+
 const SignIn = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
-  const [identifier, setIdentifier] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const { login, isLoggedIn } = useAuth();
+
+  const [savedLogin] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(REMEMBER_KEY) || "null");
+    } catch {
+      return null;
+    }
+  });
+
+  const [identifier, setIdentifier] = useState(savedLogin?.identifier || "");
+  const [password, setPassword] = useState(savedLogin?.password || "");
+  const [rememberMe, setRememberMe] = useState(Boolean(savedLogin?.identifier));
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -18,6 +29,11 @@ const SignIn = () => {
     setLoading(true);
     try {
       await login({ email: identifier, password });
+      if (rememberMe) {
+        localStorage.setItem(REMEMBER_KEY, JSON.stringify({ identifier, password }));
+      } else {
+        localStorage.removeItem(REMEMBER_KEY);
+      }
       navigate("/");
     } catch (err) {
       setError(err.message || "Login failed");
@@ -25,6 +41,10 @@ const SignIn = () => {
       setLoading(false);
     }
   };
+
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col justify-center py-12 sm:px-6 lg:px-8"
@@ -57,8 +77,8 @@ const SignIn = () => {
                 <span className="label-text font-semibold">Username or Email</span>
               </div>
               <input
-                id="email"
-                name="email"
+                id="identifier"
+                name="identifier"
                 type="text"
                 autoComplete="email"
                 required

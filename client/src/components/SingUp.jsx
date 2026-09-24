@@ -1,11 +1,11 @@
 import { BookOpen } from "lucide-react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext/AuthContext";
 
 const SignUp = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { register, isLoggedIn } = useAuth();
   const [formData, setFormData] = useState({
     firstname: "",
     lastname: "",
@@ -28,6 +28,10 @@ const SignUp = () => {
       setError("Passwords do not match");
       return;
     }
+    if (formData.password.length < 6) {
+      setError("รหัสผ่านต้องมีความยาวอย่างน้อย 6 ตัวอักษร");
+      return;
+    }
     setLoading(true);
     try {
       const payload = { ...formData };
@@ -41,6 +45,9 @@ const SignUp = () => {
     }
   };
 
+  if (isLoggedIn) {
+    return <Navigate to="/" replace />;
+  }
   return (
     <div
       className="min-h-screen bg-cover bg-center bg-no-repeat flex flex-col justify-center py-12 sm:px-6 lg:px-8"

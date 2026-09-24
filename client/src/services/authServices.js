@@ -1,14 +1,5 @@
 import apiClient from "../api/apiClient";
 
-<<<<<<< HEAD
-export const login = (credentials) =>
-  apiClient.post("/auth/login", credentials);
-
-export const register = (userData) =>
-  apiClient.post("/auth/register", userData);
-
-export const logout = () => apiClient.post("/auth/logout");
-=======
 const AUTH_PATH = "/auth";
 
 export const register = (userData) => {
@@ -22,4 +13,3 @@ export const login = (credentials) => {
 export const logout = () => {
   return apiClient.post(`${AUTH_PATH}/logout`);
 };
->>>>>>> main
