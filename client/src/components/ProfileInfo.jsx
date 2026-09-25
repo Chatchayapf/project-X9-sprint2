@@ -50,10 +50,12 @@ const ProfileInfo = ({ onEdit, successCount }) => {
               {authUser?.role === "admin" ? "Admin" : "Member"}
             </span>
           </div>
-          <div className="bg-green-100/80 border border-green-200 text-green-700 px-5 py-3 rounded-xl flex items-center gap-2">
-            <CheckCircle size={20} />
-            <span className="font-semibold text-sm">{successCount} ซื้อสำเร็จ</span>
-          </div>
+          {authUser?.role !== "admin" && (
+            <div className="bg-green-100/80 border border-green-200 text-green-700 px-5 py-3 rounded-xl flex items-center gap-2">
+              <CheckCircle size={20} />
+              <span className="font-semibold text-sm">{successCount} ซื้อสำเร็จ</span>
+            </div>
+          )}
         </div>
       </div>
 

@@ -340,14 +340,26 @@ const Navbar = ({
                     My Profile
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="/orders"
-                    onClick={() => document.activeElement.blur()}
-                  >
-                    My Orders
-                  </Link>
-                </li>
+                {user?.role !== "admin" && (
+                  <li>
+                    <Link
+                      to="/orders"
+                      onClick={() => document.activeElement.blur()}
+                    >
+                      My Orders
+                    </Link>
+                  </li>
+                )}
+                {user?.role === "admin" && (
+                  <li>
+                    <Link
+                      to="/admin/products"
+                      onClick={() => document.activeElement.blur()}
+                    >
+                      Product Management
+                    </Link>
+                  </li>
+                )}
                 {user?.role === "admin" && (
                   <li>
                     <Link
