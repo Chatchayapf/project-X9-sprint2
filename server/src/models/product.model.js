@@ -14,7 +14,10 @@ const productSchema = new mongoose.Schema(
     quantity: { type: Number, required: true, min: 0, default: 0 },
     rating: { type: Number, default: 0, min: 0, max: 5 },
     reviews: { type: Number, default: 0, min: 0 },
-    img_url: [{ type: String }],
+    img_url: {
+      type: [String],
+      required: [true, "A product must have at least one image"],
+    },
     details: {
       pages: { type: String },
       format: { type: String },

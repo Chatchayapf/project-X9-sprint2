@@ -1,5 +1,8 @@
 import { v2 as cloudinary } from "cloudinary";
 
+const CLOUDINARY_HOST = "res.cloudinary.com";
+const PRODUCT_FOLDER = "digi9_product";
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -8,7 +11,7 @@ cloudinary.config({
 
 export async function uploadImage(img) {
   const res = await cloudinary.uploader.upload(img, {
-    folder: "digi9_product",
+    folder: PRODUCT_FOLDER,
   });
   if (!res) {
     throw new Error("Can't connect to Cloudinary!!");
@@ -40,7 +43,26 @@ export const getPublicIdFromUrl = (url) => {
   return `${folder}/${filename}`;
 };
 
+const isManagedProductImage = (url) => {
+  try {
+    const parsedUrl = new URL(url);
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    if (
+      parsedUrl.hostname !== CLOUDINARY_HOST ||
+      !cloudName ||
+      !parsedUrl.pathname.startsWith(`/${cloudName}/image/upload/`)
+    ) {
+      return false;
+    }
+    return getPublicIdFromUrl(url).startsWith(`${PRODUCT_FOLDER}/`);
+  } catch {
+    return false;
+  }
+};
+
 export async function deleteImage(url) {
+  if (!isManagedProductImage(url)) return null;
+
   try {
     const publicId = getPublicIdFromUrl(url);
     const res = await cloudinary.uploader.destroy(publicId);

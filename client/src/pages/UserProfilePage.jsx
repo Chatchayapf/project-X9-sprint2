@@ -3,12 +3,16 @@ import { getMyOrders } from "../services/orderServices";
 import ProfileInfo from "../components/ProfileInfo";
 import EditProfileForm from "../components/EditProfileForm";
 import RecentOrders from "../components/RecentOrders";
+import { useAuth } from "../context/AuthContext/AuthContext";
 
 const UserProfilePage = () => {
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
+    if (user?.role === "admin") return;
+
     const fetchMyOrders = async () => {
       try {
         const res = await getMyOrders();
@@ -18,7 +22,7 @@ const UserProfilePage = () => {
       }
     };
     fetchMyOrders();
-  }, []);
+  }, [user?.role]);
 
   const successfulOrdersCount =
     orders?.filter(
@@ -41,7 +45,7 @@ const UserProfilePage = () => {
       </div>
 
       {/* Recent Orders Section */}
-      <RecentOrders orders={orders || []} />
+      {user?.role !== "admin" && <RecentOrders orders={orders || []} />}
     </div>
   );
 };

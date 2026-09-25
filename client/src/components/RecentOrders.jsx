@@ -37,7 +37,7 @@ const getPaymentStatusBadge = (status) => {
 const RecentOrders = ({ orders }) => {
   // ดึงมาแสดงแค่ 2 รายการล่าสุด
   const recentOrders =
-    orders && orders.length > 0 ? [...orders].reverse().slice(0, 3) : [];
+    orders && orders.length > 0 ? [...orders].slice(0, 3) : [];
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-base-200 p-6 md:p-8">

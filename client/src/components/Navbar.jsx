@@ -19,6 +19,16 @@ const Navbar = ({
 
   const [activeMenu, setActiveMenu] = useState("product");
 
+  const handleLogout = async () => {
+    document.activeElement.blur();
+    try {
+      await logout();
+      navigate("/signin", { replace: true });
+    } catch (error) {
+      window.alert(`ออกจากระบบไม่สำเร็จ: ${error.message || "Request failed"}`);
+    }
+  };
+
   const handleQuantityChange = async (id, change) => {
     if (!isLoggedIn) {
       updateQuantity?.(id, change);
@@ -340,14 +350,26 @@ const Navbar = ({
                     My Profile
                   </Link>
                 </li>
-                <li>
-                  <Link
-                    to="/orders"
-                    onClick={() => document.activeElement.blur()}
-                  >
-                    My Orders
-                  </Link>
-                </li>
+                {user?.role !== "admin" && (
+                  <li>
+                    <Link
+                      to="/orders"
+                      onClick={() => document.activeElement.blur()}
+                    >
+                      My Orders
+                    </Link>
+                  </li>
+                )}
+                {user?.role === "admin" && (
+                  <li>
+                    <Link
+                      to="/admin/products"
+                      onClick={() => document.activeElement.blur()}
+                    >
+                      Product Management
+                    </Link>
+                  </li>
+                )}
                 {user?.role === "admin" && (
                   <li>
                     <Link
@@ -369,14 +391,7 @@ const Navbar = ({
                   </li>
                 )}
                 <li>
-                  <a
-                    onClick={() => {
-                      document.activeElement.blur();
-                      logout();
-                    }}
-                  >
-                    Logout
-                  </a>
+                  <a onClick={handleLogout}>Logout</a>
                 </li>
               </ul>
             </div>
