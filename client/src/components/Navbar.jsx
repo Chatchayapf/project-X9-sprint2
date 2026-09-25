@@ -19,6 +19,16 @@ const Navbar = ({
 
   const [activeMenu, setActiveMenu] = useState("product");
 
+  const handleLogout = async () => {
+    document.activeElement.blur();
+    try {
+      await logout();
+      navigate("/signin", { replace: true });
+    } catch (error) {
+      window.alert(`ออกจากระบบไม่สำเร็จ: ${error.message || "Request failed"}`);
+    }
+  };
+
   const handleQuantityChange = async (id, change) => {
     if (!isLoggedIn) {
       updateQuantity?.(id, change);
@@ -381,14 +391,7 @@ const Navbar = ({
                   </li>
                 )}
                 <li>
-                  <a
-                    onClick={() => {
-                      document.activeElement.blur();
-                      logout();
-                    }}
-                  >
-                    Logout
-                  </a>
+                  <a onClick={handleLogout}>Logout</a>
                 </li>
               </ul>
             </div>
