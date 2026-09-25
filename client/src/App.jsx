@@ -15,6 +15,7 @@ import AdminCustomOrdersPage from "./pages/AdminCustomOrdersPage";
 import { CartProvider } from "./context/CartContext/CartProvider";
 import { AuthProvider } from "./context/AuthContext/AuthProvider";
 import UserProfilePage from "./pages/UserProfilePage";
+import AdminProductsPage from "./pages/AdminProductsPage";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
       { path: "orders", element: <OrdersPage /> },
       { path: "admin/orders", element: <AdminOrdersPage /> },
       { path: "admin/custom-orders", element: <AdminCustomOrdersPage /> },
+      { path: "admin/products", element: <AdminProductsPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
