@@ -6,6 +6,10 @@ export const getAllProducts = () => {
   return apiClient.get(ADMIN_PRODUCTS_PATH);
 };
 
+export const getAdminStats = () => {
+  return apiClient.get("/admin/stats");
+};
+
 export const createProduct = (formData) => {
   return apiClient.post(ADMIN_PRODUCTS_PATH, formData);
 };

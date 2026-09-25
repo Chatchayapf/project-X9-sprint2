@@ -4,6 +4,7 @@ import { uploadImages } from "../../middlewares/upload.middleware.js";
 import { validateObjectId } from "../../middlewares/validateObjectId.middleware.js";
 import {
   getAllProducts,
+  getAdminStats,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -13,6 +14,7 @@ export const router = Router();
 
 router.use(authUser, authAdmin);
 
+router.get("/stats", getAdminStats);
 router.get("/products", getAllProducts);
 router.post("/products", uploadImages, createProduct);
 router.patch("/products/:id", validateObjectId, uploadImages, updateProduct);
