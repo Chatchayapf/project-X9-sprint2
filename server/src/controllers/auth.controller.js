@@ -7,12 +7,17 @@ const generateAccessToken = (userId) => {
   });
 };
 
-const cookieOptions = (maxAge) => ({
-  httpOnly: true,
-  maxAge,
-  sameSite: "none",
-  secure: process.env.NODE_ENV === "production",
-});
+const cookieOptions = (maxAge) => {
+  const isProd = process.env.NODE_ENV === "production";
+
+  return {
+    httpOnly: true,
+    maxAge,
+    path: "/",
+    sameSite: isProd ? "none" : "lax",
+    secure: isProd,
+  };
+};
 
 export const register = async (req, res, next) => {
   try {
@@ -124,11 +129,13 @@ export const login = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
+    const isProd = process.env.NODE_ENV === "production";
+
     res.clearCookie("accessToken", {
       httpOnly: true,
-      sameSite: "none",
-      secure: process.env.NODE_ENV === "production",
       path: "/",
+      sameSite: isProd ? "none" : "lax",
+      secure: isProd,
     });
 
     res.status(200).json({
