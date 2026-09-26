@@ -4,7 +4,6 @@ import { checkoutCart } from '../services/checkoutServices';
 
 const Checkout = ({ cartItems, clearCart }) => {
   const navigate = useNavigate();
-  const [isSuccess, setIsSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
   const [formData, setFormData] = useState({
@@ -28,39 +27,16 @@ const Checkout = ({ cartItems, clearCart }) => {
     setIsSubmitting(true);
 
     try {
-      await checkoutCart();
-      setIsSuccess(true);
-      clearCart();
+      const response = await checkoutCart();
+      if (response && response.url) {
+        // Redirect to Stripe Checkout page
+        window.location.href = response.url;
+      }
     } catch (error) {
       setCheckoutError(error.message || 'Checkout failed. Please try again.');
-    } finally {
       setIsSubmitting(false);
     }
   };
-
-  if (isSuccess) {
-    return (
-      <div className="container mx-auto px-4 py-16 max-w-lg text-center">
-        <div className="card bg-base-100 shadow-xl border border-success/30 p-8 space-y-4">
-          <div className="w-20 h-20 bg-success/10 text-success rounded-full flex items-center justify-center mx-auto text-4xl">
-            ✓
-          </div>
-          <h2 className="text-3xl font-bold">สั่งซื้อสำเร็จ!</h2>
-          <p className="text-base-content/70">
-            ขอบคุณสำหรับการสั่งซื้อ ระบบได้ส่งรายละเอียดและลิงก์ดาวน์โหลดสินค้าไปที่อีเมล <span className="font-semibold text-base-content">{formData.email}</span> แล้ว
-          </p>
-          <div className="pt-4">
-            <button onClick={() => navigate('/orders')} className="btn btn-primary mr-2">
-              View My Orders
-            </button>
-            <button onClick={() => navigate('/')} className="btn btn-primary">
-              กลับสู่หน้าแรก
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   if (cartItems.length === 0) {
     return (
