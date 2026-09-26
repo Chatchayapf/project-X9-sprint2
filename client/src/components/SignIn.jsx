@@ -1,5 +1,5 @@
 import { BookOpen } from "lucide-react";
-import { Link, useNavigate, Navigate } from "react-router-dom";
+import { Link, useLocation, useNavigate, Navigate } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/AuthContext/AuthContext";
 
@@ -7,7 +7,9 @@ const REMEMBER_KEY = "d9_remembered_login";
 
 const SignIn = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { login, isLoggedIn } = useAuth();
+  const redirectTo = location.state?.from?.pathname || "/";
 
   const [savedLogin] = useState(() => {
     try {
@@ -34,7 +36,7 @@ const SignIn = () => {
       } else {
         localStorage.removeItem(REMEMBER_KEY);
       }
-      navigate("/");
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       setError(err.message || "Login failed");
     } finally {

@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext/AuthContext";
 import { getAllOrders, updatePaymentStatus } from "../services/orderServices";
 
 const formatPrice = (price) => `฿${Number(price).toLocaleString()}`;
 
 const AdminOrdersPage = () => {
-  const { user } = useAuth();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -26,12 +23,9 @@ const AdminOrdersPage = () => {
   }, []);
 
   useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      if (user?.role === "admin") loadOrders();
-      else setLoading(false);
-    }, 0);
+    const timeoutId = window.setTimeout(loadOrders, 0);
     return () => window.clearTimeout(timeoutId);
-  }, [user, loadOrders]);
+  }, [loadOrders]);
 
   const handlePaymentStatusChange = async (orderId, event) => {
     const paymentStatus = event.target.value;
@@ -55,18 +49,6 @@ const AdminOrdersPage = () => {
       setUpdatingPaymentId("");
     }
   };
-
-  if (user?.role !== "admin") {
-    return (
-      <main className="container mx-auto px-4 py-16 max-w-3xl text-center">
-        <h1 className="text-2xl font-bold mb-3">Admin access required</h1>
-        <p className="mb-5">Sign in with an administrator account to view all orders.</p>
-        <Link to="/signin" className="btn btn-primary">
-          Sign in
-        </Link>
-      </main>
-    );
-  }
 
   return (
     <main className="container mx-auto px-4 py-10 max-w-7xl">
