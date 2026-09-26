@@ -6,6 +6,7 @@ import CustomOrderPage from "./pages/CustomOrderPage";
 import Contact from "./pages/Contact";
 import SignInPage from "./pages/SignInPage";
 import CheckoutPage from "./pages/CheckoutPage";
+import CheckoutSuccess from "./pages/CheckoutSuccess";
 import SignUpPage from "./pages/SignUpPage";
 import AllProductsPage from "./pages/AllProductsPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: "signin", element: <SignInPage /> },
       { path: "signup", element: <SignUpPage /> },
       { path: "checkout", element: <CheckoutPage /> },
+      { path: "checkout/success", element: <CheckoutSuccess /> },
       { path: "users/me", element: <UserProfilePage /> },
       { path: "orders", element: <OrdersPage /> },
       { path: "admin/orders", element: <AdminOrdersPage /> },

@@ -3,9 +3,14 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import { connectDB } from "./config/db.js";
 import { router as apiRoutes } from "./routes/index.js";
+import { router as webhookRoutes } from "./routes/v1/webhook.routes.js";
 
 const app = express();
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
+
+// Stripe webhook route needs raw body for signature verification
+app.use("/api/v1/webhook", express.raw({ type: "application/json" }), webhookRoutes);
+
 app.use(express.json());
 app.use(cookieParser());
 

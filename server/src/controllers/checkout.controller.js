@@ -2,6 +2,9 @@ import { Order } from "../models/order.model.js";
 import { Product } from "../models/product.model.js";
 import { CustomProduct } from "../models/customProduct.model.js";
 import { User } from "../models/user.model.js";
+import Stripe from "stripe";
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // ============================================
 // Checkout: standard cart items
@@ -16,6 +19,7 @@ export const checkoutNormalItems = async (req, res, next) => {
         }
 
         const items = [];
+        const line_items = [];
         let totalPrice = 0;
 
         for (const cartItem of user.cart) {
@@ -40,6 +44,17 @@ export const checkoutNormalItems = async (req, res, next) => {
                 quantity: cartItem.product_quantity,
                 price,
             });
+
+            line_items.push({
+                price_data: {
+                    currency: 'thb',
+                    product_data: {
+                        name: product.name,
+                    },
+                    unit_amount: Math.round(price * 100),
+                },
+                quantity: cartItem.product_quantity,
+            });
         }
 
         const order = await Order.create({
@@ -52,7 +67,19 @@ export const checkoutNormalItems = async (req, res, next) => {
         user.cart = [];
         await user.save();
 
-        res.status(200).json(order);
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card', 'promptpay'],
+            line_items,
+            mode: 'payment',
+            success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/cart`,
+            client_reference_id: order._id.toString(),
+            metadata: {
+                order_id: order._id.toString()
+            }
+        });
+
+        res.status(200).json({ order, url: session.url });
     } catch (error) {
         next(error);
     }
@@ -122,7 +149,30 @@ export const checkoutCustomItems = async (req, res, next) => {
         customProduct.status = "in-progress";
         await customProduct.save();
 
-        res.status(200).json(order);
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card', 'promptpay'],
+            line_items: [
+                {
+                    price_data: {
+                        currency: 'thb',
+                        product_data: {
+                            name: `Custom Item: ${customProduct.name || 'Custom Product'}`,
+                        },
+                        unit_amount: Math.round(customProduct.price * 100),
+                    },
+                    quantity: 1,
+                }
+            ],
+            mode: 'payment',
+            success_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+            cancel_url: `${process.env.CLIENT_URL || 'http://localhost:5173'}/cart`,
+            client_reference_id: order._id.toString(),
+            metadata: {
+                order_id: order._id.toString()
+            }
+        });
+
+        res.status(200).json({ order, url: session.url });
     } catch (error) {
         next(error);
     }
