@@ -1,15 +1,20 @@
 import { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
+import { verifyCheckoutSession } from '../services/checkoutServices';
+
 const CheckoutSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    // Optionally clear cart here instead if it wasn't cleared before redirect
-    // (In our case we clear it after Stripe is successful, but actually 
-    // it's better to clear it when the webhook is received or here)
-  }, []);
+    const searchParams = new URLSearchParams(location.search);
+    const sessionId = searchParams.get('session_id');
+
+    if (sessionId) {
+      verifyCheckoutSession(sessionId).catch(console.error);
+    }
+  }, [location]);
 
   return (
     <div className="container mx-auto px-4 py-16 max-w-lg text-center">

@@ -11,3 +11,9 @@ export const checkoutCustomItem = (customProductId) => {
     custom_product_id: customProductId,
   });
 };
+
+export const verifyCheckoutSession = (sessionId) => {
+  return apiClient.post(`${CHECKOUT_PATH}/verify`, {
+    session_id: sessionId,
+  });
+};
