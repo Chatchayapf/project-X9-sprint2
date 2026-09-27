@@ -43,8 +43,84 @@ Content-Type: application/json
 ### delete items
 DELETE {{baseUrl}}/cart/items/6aac0060168899311d4475ef
 
+// merge the guest cart (localStorage) into the saved cart after sign in
+// quantities are summed, price always comes from the database, never the client
 
+### merge test - setup: add 2 of the first product to the saved cart
+POST {{baseUrl}}/cart/items
+Content-Type: application/json
+
+{
+  "product_id": "6aac0060168899311d4475ef",
+  "product_quantity": 2
+}
+
+### merge test - happy path: expect the first product to become 5, second to be 1
+POST {{baseUrl}}/cart/merge
+Content-Type: application/json
+
+{
+  "items": [
+    { "product_id": "6aac0060168899311d4475ef", "product_quantity": 3 },
+    { "product_id": "6aac0060168899311d4475f0", "product_quantity": 1 }
+  ]
+}
+
+### merge test - product that no longer exists: expect 200, merged 0, one entry in dropped
+POST {{baseUrl}}/cart/merge
+Content-Type: application/json
+
+{
+  "items": [
+    { "product_id": "000000000000000000000000", "product_quantity": 1 }
+  ]
+}
+
+### merge test - partially valid payload: the good line merges, the bad one is reported in dropped
+POST {{baseUrl}}/cart/merge
+Content-Type: application/json
+
+{
+  "items": [
+    { "product_id": "6aac0060168899311d4475ef", "product_quantity": 1 },
+    { "product_id": "not-an-object-id", "product_quantity": 2 }
+  ]
+}
+
+### merge test - empty array is valid and changes nothing
+POST {{baseUrl}}/cart/merge
+Content-Type: application/json
+
+{
+  "items": []
+}
 
 // fail test
+### merge test - every entry invalid, expect 400
+POST {{baseUrl}}/cart/merge
+Content-Type: application/json
+
+{
+  "items": [
+    { "product_id": "not-an-object-id", "product_quantity": 0 }
+  ]
+}
+
+### merge test - items is not an array, expect 400
+POST {{baseUrl}}/cart/merge
+Content-Type: application/json
+
+{
+  "items": "oops"
+}
+
 ### no login test
 GET {{baseUrl}}/cart
+
+### no login test - merge
+POST {{baseUrl}}/cart/merge
+Content-Type: application/json
+
+{
+  "items": []
+}

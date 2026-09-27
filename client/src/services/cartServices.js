@@ -20,3 +20,7 @@ export const updateCartItem = (productId, action) => {
 export const removeCartItem = (productId) => {
   return apiClient.delete(`${CART_PATH}/items/${productId}`);
 };
+
+export const mergeCart = (items) => {
+  return apiClient.post(`${CART_PATH}/merge`, { items });
+};
