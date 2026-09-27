@@ -1,9 +1,8 @@
 import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { checkoutCart } from '../services/checkoutServices';
 
-const Checkout = ({ cartItems, clearCart }) => {
-  const navigate = useNavigate();
+const Checkout = ({ cartItems }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
   const [formData, setFormData] = useState({
