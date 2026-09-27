@@ -65,7 +65,9 @@ const OrdersPage = () => {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">{formatPrice(order.total_price)}</p>
-                    <p className="text-sm capitalize">{order.order_status} · payment {order.payment_status}</p>
+                    <p className="text-sm capitalize">
+                      {order.order_status} · {order.payment_status === "paid" ? "จ่ายแล้ว" : `payment ${order.payment_status}`}
+                    </p>
                   </div>
                 </div>
                 <ul className="divide-y divide-base-200">

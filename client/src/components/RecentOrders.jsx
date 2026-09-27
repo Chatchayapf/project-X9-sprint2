@@ -92,7 +92,7 @@ const RecentOrders = ({ orders }) => {
                     <span
                       className={`px-2 py-0.5 rounded-md border ${getPaymentStatusBadge(order.payment_status)}`}
                     >
-                      Payment: {order.payment_status}
+                      {order.payment_status === "paid" ? "จ่ายแล้ว" : `Payment: ${order.payment_status}`}
                     </span>
                   </div>
                 </div>
