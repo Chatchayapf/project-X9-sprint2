@@ -1,6 +1,4 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext/AuthContext";
 import {
   approveCustomOrder,
   getAllCustomOrders,
@@ -8,7 +6,6 @@ import {
 } from "../services/customOrderServices";
 
 const AdminCustomOrdersPage = () => {
-  const { user } = useAuth();
   const [customOrders, setCustomOrders] = useState([]);
   const [prices, setPrices] = useState({});
   const [statusFilter, setStatusFilter] = useState("pending");
@@ -30,9 +27,8 @@ const AdminCustomOrdersPage = () => {
   }, [statusFilter]);
 
   useEffect(() => {
-    if (user?.role === "admin") loadCustomOrders();
-    else setLoading(false);
-  }, [user, loadCustomOrders]);
+    loadCustomOrders();
+  }, [loadCustomOrders]);
 
   const handleApprove = async (event, orderId) => {
     event.preventDefault();
@@ -67,16 +63,6 @@ const AdminCustomOrdersPage = () => {
       setWorkingId("");
     }
   };
-
-  if (user?.role !== "admin") {
-    return (
-      <main className="container mx-auto px-4 py-16 max-w-3xl text-center">
-        <h1 className="text-2xl font-bold mb-3">Admin access required</h1>
-        <p className="mb-5">Sign in with an administrator account to manage custom orders.</p>
-        <Link to="/signin" className="btn btn-primary">Sign in</Link>
-      </main>
-    );
-  }
 
   return (
     <main className="container mx-auto px-4 py-10 max-w-5xl">

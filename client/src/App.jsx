@@ -17,6 +17,8 @@ import { CartProvider } from "./context/CartContext/CartProvider";
 import { AuthProvider } from "./context/AuthContext/AuthProvider";
 import UserProfilePage from "./pages/UserProfilePage";
 import AdminProductsPage from "./pages/AdminProductsPage";
+import RequireAuth from "./components/RequireAuth";
+import RequireAdmin from "./components/RequireAdmin";
 
 const router = createBrowserRouter([
   {
@@ -28,16 +30,26 @@ const router = createBrowserRouter([
       { path: "all-products", element: <AllProductsPage /> },
       { path: "product/:id", element: <ProductDetailPage /> },
       { path: "contact", element: <Contact /> },
-      { path: "custom-order", element: <CustomOrderPage /> },
       { path: "signin", element: <SignInPage /> },
       { path: "signup", element: <SignUpPage /> },
-      { path: "checkout", element: <CheckoutPage /> },
-      { path: "checkout/success", element: <CheckoutSuccess /> },
-      { path: "users/me", element: <UserProfilePage /> },
-      { path: "orders", element: <OrdersPage /> },
-      { path: "admin/orders", element: <AdminOrdersPage /> },
-      { path: "admin/custom-orders", element: <AdminCustomOrdersPage /> },
-      { path: "admin/products", element: <AdminProductsPage /> },
+      {
+        element: <RequireAuth />,
+        children: [
+          { path: "custom-order", element: <CustomOrderPage /> },
+          { path: "checkout", element: <CheckoutPage /> },
+          { path: "checkout/success", element: <CheckoutSuccess /> },
+          { path: "users/me", element: <UserProfilePage /> },
+          { path: "orders", element: <OrdersPage /> },
+        ],
+      },
+      {
+        element: <RequireAdmin />,
+        children: [
+          { path: "admin/orders", element: <AdminOrdersPage /> },
+          { path: "admin/custom-orders", element: <AdminCustomOrdersPage /> },
+          { path: "admin/products", element: <AdminProductsPage /> },
+        ],
+      },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
