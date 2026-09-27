@@ -3,6 +3,7 @@ import { authUser } from "../../middlewares/auth.middleware.js";
 import {
     checkoutNormalItems,
     checkoutCustomItems,
+    verifyCheckoutSession,
 } from "../../controllers/checkout.controller.js";
 
 export const router = Router();
@@ -13,3 +14,6 @@ router.post("/", authUser, checkoutNormalItems);
 // Checkout a single already-approved custom item
 // body: { custom_product_id }
 router.post("/custom", authUser, checkoutCustomItems);
+
+// Verify checkout session status
+router.post("/verify", authUser, verifyCheckoutSession);
