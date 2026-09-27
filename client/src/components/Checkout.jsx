@@ -97,7 +97,7 @@ const Checkout = ({ cartItems, clearCart }) => {
               {cartItems.map(item => (
                 <div key={item.id} className="flex justify-between items-start gap-2">
                   <div>
-                    <h4 className="font-medium text-sm line-clamp-2">{item.title}</h4>
+                    <h4 className="font-medium text-sm line-clamp-2">{item.name}</h4>
                     <div className="text-xs text-base-content/60 mt-1">จำนวน: {item.quantity}</div>
                   </div>
                   <div className="font-semibold text-sm whitespace-nowrap">฿{(item.price * item.quantity).toLocaleString()}</div>
